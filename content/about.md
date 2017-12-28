@@ -11,3 +11,12 @@ I graduated from the University of Portsmouth in 2001 with a Bachelor's degree i
 Over the years I've built up a broad range of skills including problem structuring, project management, systems thinking, technical assurance, and consultancy, but my first love has always been getting my hands dirty tinkering with code tackling a meaty problem. My love of mathematics and coding combined with a love of learning has pushed me to now pursue a Data Science career and I am loving it so far!
 
 I have developed this blog as an excuse to become better acquainted with R-Markdown and Git, but I also want a way of documenting my progression.
+
+More generally, my interests are:
+
+* Seeing the world
+* Star Wars
+* Lego
+* Star Wars Lego
+* The music of Michael Jackson
+* Science Fiction in general
