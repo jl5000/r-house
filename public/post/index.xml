@@ -6,10 +6,19 @@
     <description>Recent content in Posts on R-house</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 30 Dec 2016 21:49:57 -0700</lastBuildDate>
+    <lastBuildDate>Thu, 28 Dec 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Welcome!</title>
+      <link>/2017/12/28/welcome/</link>
+      <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/12/28/welcome/</guid>
+      <description>Welcome to my blog! A brief introduction is on the About page for a brief overview of all that is me!</description>
+    </item>
     
     <item>
       <title>A Plain Markdown Post</title>
