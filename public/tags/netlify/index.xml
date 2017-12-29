@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Rstudio on R-house</title>
-    <link>/tags/rstudio/</link>
-    <description>Recent content in Rstudio on R-house</description>
+    <title>Netlify on R-house</title>
+    <link>/tags/netlify/</link>
+    <description>Recent content in Netlify on R-house</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 29 Dec 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/rstudio/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/netlify/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -19,15 +19,6 @@
       <guid>/2017/12/29/rstudio---blogdown---github---netlify--a-winning-formula/</guid>
       <description>I thought it was worth posting about how I set up this blog as I had enormous trouble setting it up. I’d never done anything like this before and so some Google searching exposed me to many different technologies, but I had no clue what they did, which were best/easiest to work with and which combination I needed to use them in.
 First off, big thanks go to John Muschelli and his YouTube video which got me up and running in no time.</description>
-    </item>
-    
-    <item>
-      <title>Star Wars: Galaxy of Heroes - who knew a mobile game could be so complicated?!</title>
-      <link>/2017/12/29/star-wars-galaxy-of-heroes---who-knew-a-mobile-game-could-be-so-complicated/</link>
-      <pubDate>Fri, 29 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/2017/12/29/star-wars-galaxy-of-heroes---who-knew-a-mobile-game-could-be-so-complicated/</guid>
-      <description>How I started playingWhat are mods??Laying the groundworkReading in game dataCleaning it upLet the shenanigans begin!!Attempt 2: Brute force…The eventual resignation…How I started playingBack in 2015, during the boring period between Christmas and New Year, I decided to try out a Star Wars mobile game. Star Wars: Galaxy of Heroes is essentially a jazzed up version of Top Trumps where you collect characters, upgrade them, and use them to earn rewards.</description>
     </item>
     
   </channel>

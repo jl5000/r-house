@@ -1,0 +1,29 @@
+---
+title: "RStudio + Blogdown + Github + Netlify = A winning formula"
+date: "2017-12-29"
+author: "Jamie Lendrum"
+output: blogdown::html_page
+tags: [r, rstudio, blogdown, git, github, netlify, blog, hugo]
+---
+
+
+
+<p>I thought it was worth posting about how I set up this blog as I had enormous trouble setting it up. I’d never done anything like this before and so some Google searching exposed me to many different technologies, but I had no clue what they did, which were best/easiest to work with and which combination I needed to use them in.</p>
+<p>First off, big thanks go to John Muschelli and his <a href="https://www.youtube.com/watch?v=syWAKaj-4ck">YouTube video</a> which got me up and running in no time.</p>
+<p>So if you want to go the route I have, you need several things installed on your machine:</p>
+<ul>
+<li>R</li>
+<li>RStudio</li>
+<li>The <code>blogdown</code> package (obtained via the usual <code>install.packages()</code> function)</li>
+<li>Git</li>
+</ul>
+<p>You will also need accounts with Github and Netlify.</p>
+<p>John’s video explains how to go through the set-up process better than I can, but I do want to briefly explain my workflow (based on my limited understanding so far). To update my blog with a new post, these are the steps I take:</p>
+<ol style="list-style-type: decimal">
+<li>I create a new markdown file for a new blog post, and save it in my <code>r-house/content/post/</code> directory;</li>
+<li>I rebuild my site on my local machine with the command <code>blogdown::build_site()</code>. This sets off the website generation software <em>Hugo</em> which sits behind <code>blogdown</code> to create the required HTML pages in the <code>r-house/public/</code> folder. The <code>public</code> folder holds all the files needed for the website.</li>
+<li>I register these changes with Git on my local machine, by staging and committing these changes from within RStudio (Tools&gt;Version Control&gt;Commit);</li>
+<li>I upload all of this to my GitHub repository by hitting the Push button.</li>
+</ol>
+<p>That’s it! Once my GitHub repository updates, Netlify automatically refreshes my blog by recognising the <code>public/</code> folder has changed.</p>
+<p>My task now is to figure out how to use a different Hugo theme without breaking everything!</p>
