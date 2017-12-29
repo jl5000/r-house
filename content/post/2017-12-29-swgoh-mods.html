@@ -320,7 +320,7 @@ head(toon_stat_priority)</code></pre>
 <pre class="r"><code>mod_assignment &lt;- matrix(0, nrow=length(toon_list), ncol=length(mod_list))
 rownames(mod_assignment) &lt;- toon_list
 colnames(mod_assignment) &lt;- mod_list</code></pre>
-<p>I had input values and weightings, all I needed now was an objective function. In order to create one, I first needed to create a helper function that could update every toon’s stat enhancements when a new set of mods were applied. This function takes a particular toon and stat, and then uses a yet-to-be defined mod assignment array to figure out which mods have been applied, adds up the stats from primaries and secondaries, and then adds on set bonuses:</p>
+<p>I had input values and weightings, all I needed now was an objective function. In order to create one, I first needed to create a helper function that could update every toon’s stat enhancements when a new set of mods were applied. This function takes a particular toon and stat, and then uses the <code>mod_assignment</code> array to figure out which mods have been applied, adds up the stats from primaries and secondaries, and then adds on set bonuses:</p>
 <pre class="r"><code>new_stat &lt;- function(toon, stat, mod_assignment) {
   
   

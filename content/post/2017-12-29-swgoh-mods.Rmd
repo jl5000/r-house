@@ -266,7 +266,7 @@ rownames(mod_assignment) <- toon_list
 colnames(mod_assignment) <- mod_list
 ```
 
-I had input values and weightings, all I needed now was an objective function. In order to create one, I first needed to create a helper function that could update every toon's stat enhancements when a new set of mods were applied. This function takes a particular toon and stat, and then uses a yet-to-be defined mod assignment array to figure out which mods have been applied, adds up the stats from primaries and secondaries, and then adds on set bonuses:
+I had input values and weightings, all I needed now was an objective function. In order to create one, I first needed to create a helper function that could update every toon's stat enhancements when a new set of mods were applied. This function takes a particular toon and stat, and then uses the `mod_assignment` array to figure out which mods have been applied, adds up the stats from primaries and secondaries, and then adds on set bonuses:
 
 ```{r}
 new_stat <- function(toon, stat, mod_assignment) {
