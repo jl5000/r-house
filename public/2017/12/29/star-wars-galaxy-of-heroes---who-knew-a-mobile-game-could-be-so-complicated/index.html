@@ -328,9 +328,9 @@ dim(mods_info)</code></pre>
 names(toon_priority) &lt;- toon_list
 head(toon_priority)</code></pre>
 <pre><code>##       Ahsoka Tano Biggs Darklighter         Boba Fett       Chief Nebit 
-##                 4                 4                 3                 8 
+##                13                 2                10                 6 
 ## CT-21-0408 &#39;Echo&#39;   CT-5555 &#39;Fives&#39; 
-##                 3                20</code></pre>
+##                 0                12</code></pre>
 <pre class="r"><code>toon_stat_priority &lt;- matrix(sample(0:10,
                                     size = length(toon_list)*length(stat_names),
                                     replace = TRUE),
@@ -340,26 +340,26 @@ rownames(toon_stat_priority) &lt;- toon_list
 colnames(toon_stat_priority) &lt;- stat_names
 head(toon_stat_priority)</code></pre>
 <pre><code>##                   Speed Speed % Potency % Tenacity % Offense Offense %
-## Ahsoka Tano           2       9         3          9       6         5
-## Biggs Darklighter     5       0         3          9      10         0
-## Boba Fett             7       8         5          8       5         1
-## Chief Nebit           6       3         1         10       3         4
-## CT-21-0408 &#39;Echo&#39;     5       7         2          6       1         8
-## CT-5555 &#39;Fives&#39;       5       6         8          4       1         4
+## Ahsoka Tano          10       2         9          2       3         7
+## Biggs Darklighter     8       8        10          2       8         1
+## Boba Fett             6       4         3          1       5        10
+## Chief Nebit           8       2         7          0       3         7
+## CT-21-0408 &#39;Echo&#39;     2       6         2          0       6         9
+## CT-5555 &#39;Fives&#39;       7       4         5          7       4         7
 ##                   Protection Protection % Critical Chance %
-## Ahsoka Tano                0            5                10
-## Biggs Darklighter          9            6                 3
-## Boba Fett                  1            6                 4
-## Chief Nebit                8            3                 1
-## CT-21-0408 &#39;Echo&#39;          6            0                 4
-## CT-5555 &#39;Fives&#39;            2            0                 0
+## Ahsoka Tano                8            5                 8
+## Biggs Darklighter          9            2                 4
+## Boba Fett                  8            2                 0
+## Chief Nebit                1            9                 5
+## CT-21-0408 &#39;Echo&#39;          1            7                 3
+## CT-5555 &#39;Fives&#39;            7            3                10
 ##                   Critical Damage % Defense Defense % Health Health %
-## Ahsoka Tano                      10       6         4      4        1
-## Biggs Darklighter                 0       4         5      1       10
-## Boba Fett                         0       1         3      1        9
-## Chief Nebit                       2       1        10      8        8
-## CT-21-0408 &#39;Echo&#39;                 1       3        10      1        3
-## CT-5555 &#39;Fives&#39;                   5       7         9      1       10</code></pre>
+## Ahsoka Tano                       3       0         5     10        3
+## Biggs Darklighter                 5       2         3      9        9
+## Boba Fett                        10      10         3      8        9
+## Chief Nebit                       3       9         2      7        8
+## CT-21-0408 &#39;Echo&#39;                 1       7         2      0        3
+## CT-5555 &#39;Fives&#39;                   8       7        10      0        1</code></pre>
 </div>
 <div id="let-the-shenanigans-begin" class="section level2">
 <h2>Let the shenanigans begin!!</h2>
