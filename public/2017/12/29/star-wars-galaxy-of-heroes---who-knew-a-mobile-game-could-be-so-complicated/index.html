@@ -189,7 +189,7 @@ set_bonus_rules</code></pre>
 <p>This was the tricky bit. There is a website that players use to sync their game accounts with, <a href="http://www.swgoh.gg">swgoh.gg</a>, and somehow they had managed to reverse engineer the game to allow users to sync their game data with the website. Unfortunately no API was available, so there was really only one option that I could see - web scraping. I had a go, but didn’t get anywhere and realised this was beyond my skills for now, so a very kind individual behind the website <a href="http://www.crouchingrancor.com">Crouching Rancor</a> sent me a json file containing sample data of the mods contained within his game account.</p>
 <p>I imported this file and constructed a dataframe containing all the game data I should need to complete my script.</p>
 <pre class="r"><code>library(jsonlite)
-mods_json &lt;- fromJSON(&quot;swgoh-mods-sample.json&quot;)
+mods_json &lt;- fromJSON(&quot;data/swgoh-mods-sample.json&quot;)
 
 mods_info &lt;- data.frame(Mod.ID = mods_json$all_mods$mod_uid,
                         Initial.Toon = mods_json$all_mods$characterName,
@@ -341,9 +341,9 @@ dim(mods_info)</code></pre>
 names(toon_priority) &lt;- toon_list
 head(toon_priority)</code></pre>
 <pre><code>##       Ahsoka Tano Biggs Darklighter         Boba Fett       Chief Nebit 
-##                14                18                12                11 
+##                12                 6                20                12 
 ## CT-21-0408 &#39;Echo&#39;   CT-5555 &#39;Fives&#39; 
-##                 2                17</code></pre>
+##                17                 6</code></pre>
 <pre class="r"><code>toon_stat_priority &lt;- matrix(sample(0:10,
                                     size = length(toon_list)*length(stat_names),
                                     replace = TRUE),
@@ -353,26 +353,26 @@ rownames(toon_stat_priority) &lt;- toon_list
 colnames(toon_stat_priority) &lt;- stat_names
 head(toon_stat_priority)</code></pre>
 <pre><code>##                   Speed Speed % Potency % Tenacity % Offense Offense %
-## Ahsoka Tano           8       3        10          1       7         4
-## Biggs Darklighter    10      10         1          6       2         2
-## Boba Fett             6       2         9          6       8         3
-## Chief Nebit           5       2         6          3      10         8
-## CT-21-0408 &#39;Echo&#39;     7       8         1          1       2         9
-## CT-5555 &#39;Fives&#39;       8       5         8          6       0         9
+## Ahsoka Tano           2       8         6          4       4         4
+## Biggs Darklighter     9       4         3          8       1         5
+## Boba Fett             1       6         5          9       0         6
+## Chief Nebit           4       1         3          7       3        10
+## CT-21-0408 &#39;Echo&#39;     4       9         3          1       2         5
+## CT-5555 &#39;Fives&#39;       9       1         3          2       7         2
 ##                   Protection Protection % Critical Chance %
-## Ahsoka Tano               10           10                 7
-## Biggs Darklighter         10            5                 3
-## Boba Fett                  5            5                 1
-## Chief Nebit                6            7                 8
-## CT-21-0408 &#39;Echo&#39;          9            4                 6
-## CT-5555 &#39;Fives&#39;            1            4                10
+## Ahsoka Tano                8            3                 1
+## Biggs Darklighter          5            9                 0
+## Boba Fett                 10            5                 0
+## Chief Nebit                0            5                 4
+## CT-21-0408 &#39;Echo&#39;          5            8                 8
+## CT-5555 &#39;Fives&#39;            3            5                 1
 ##                   Critical Damage % Defense Defense % Health Health %
-## Ahsoka Tano                       3       4         5      1       10
-## Biggs Darklighter                 8       0         5      1        7
-## Boba Fett                         4      10         2      1        5
-## Chief Nebit                       3       3         7      1        7
-## CT-21-0408 &#39;Echo&#39;                 6       3         7      2        5
-## CT-5555 &#39;Fives&#39;                   1       1         6      8        1</code></pre>
+## Ahsoka Tano                      10       6         5      8        7
+## Biggs Darklighter                 9      10         6      7        4
+## Boba Fett                         8       6         4      7        5
+## Chief Nebit                       5       0         3      0        6
+## CT-21-0408 &#39;Echo&#39;                 1       8         7      3        7
+## CT-5555 &#39;Fives&#39;                   6       2         7      0        0</code></pre>
 </div>
 <div id="let-the-shenanigans-begin" class="section level2">
 <h2>Let the shenanigans begin!!</h2>
