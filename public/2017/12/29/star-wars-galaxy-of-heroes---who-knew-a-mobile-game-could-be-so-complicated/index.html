@@ -69,20 +69,7 @@
     
 
     <div class="article-content">
-      <div id="TOC">
-<ul>
-<li><a href="#how-i-started-playing">How I started playing</a></li>
-<li><a href="#what-are-mods">What are mods??</a></li>
-<li><a href="#laying-the-groundwork">Laying the groundwork</a></li>
-<li><a href="#reading-in-game-data">Reading in game data</a></li>
-<li><a href="#cleaning-it-up">Cleaning it up</a></li>
-<li><a href="#let-the-shenanigans-begin">Let the shenanigans begin!!</a></li>
-<li><a href="#attempt-2-brute-force">Attempt 2: Brute force…</a></li>
-<li><a href="#the-eventual-resignation">The eventual resignation…</a></li>
-</ul>
-</div>
-
-<div id="how-i-started-playing" class="section level2">
+      <div id="how-i-started-playing" class="section level2">
 <h2>How I started playing</h2>
 <p>Back in 2015, during the boring period between Christmas and New Year, I decided to try out a Star Wars mobile game. <strong>Star Wars: Galaxy of Heroes</strong> is essentially a jazzed up version of Top Trumps where you collect characters, upgrade them, and use them to earn rewards.</p>
 <p>What started out as a curiosity ended up being quite an addictive hobby, and the number of features and game modes (and new characters to unlock!) grew quickly. After quitting the game due to the massively disruptive introduction of “mods”, which allowed you to finely tune the stats of your characters, I returned to the game 9 months later to find that the developers had reduced the game destroying effects they had initially caused.</p>
@@ -341,9 +328,9 @@ dim(mods_info)</code></pre>
 names(toon_priority) &lt;- toon_list
 head(toon_priority)</code></pre>
 <pre><code>##       Ahsoka Tano Biggs Darklighter         Boba Fett       Chief Nebit 
-##                 1                20                 7                 1 
+##                 0                 3                 0                 6 
 ## CT-21-0408 &#39;Echo&#39;   CT-5555 &#39;Fives&#39; 
-##                19                11</code></pre>
+##                 8                11</code></pre>
 <pre class="r"><code>toon_stat_priority &lt;- matrix(sample(0:10,
                                     size = length(toon_list)*length(stat_names),
                                     replace = TRUE),
@@ -353,26 +340,26 @@ rownames(toon_stat_priority) &lt;- toon_list
 colnames(toon_stat_priority) &lt;- stat_names
 head(toon_stat_priority)</code></pre>
 <pre><code>##                   Speed Speed % Potency % Tenacity % Offense Offense %
-## Ahsoka Tano           8       6         7          1       4         8
-## Biggs Darklighter     6       8         9          2       4         1
-## Boba Fett             6       8         0          9       9         8
-## Chief Nebit           5      10         1          6       6         0
-## CT-21-0408 &#39;Echo&#39;    10       1         7          9       0        10
-## CT-5555 &#39;Fives&#39;       4       5         7          1       8         6
+## Ahsoka Tano           4       2         9          7       8        10
+## Biggs Darklighter     1       8         9         10       2         0
+## Boba Fett             1       3        10          1       8         0
+## Chief Nebit           7       4         2          3       4         6
+## CT-21-0408 &#39;Echo&#39;     3       1         6          3       4         7
+## CT-5555 &#39;Fives&#39;       8       3         5          5       4         1
 ##                   Protection Protection % Critical Chance %
-## Ahsoka Tano                7           10                 4
-## Biggs Darklighter          5           10                 6
-## Boba Fett                  5            6                 6
-## Chief Nebit                8            4                 9
-## CT-21-0408 &#39;Echo&#39;          5            8                 6
-## CT-5555 &#39;Fives&#39;            2            3                 0
+## Ahsoka Tano                2            7                 4
+## Biggs Darklighter          8           10                 5
+## Boba Fett                  4           10                 7
+## Chief Nebit               10            2                 6
+## CT-21-0408 &#39;Echo&#39;          4            2                 1
+## CT-5555 &#39;Fives&#39;            7            0                10
 ##                   Critical Damage % Defense Defense % Health Health %
-## Ahsoka Tano                      10       2         6      1        2
-## Biggs Darklighter                 8       0         5      7        1
-## Boba Fett                         6       6         5      4        3
-## Chief Nebit                       4       5         7      9        0
-## CT-21-0408 &#39;Echo&#39;                 9       5         3      8       10
-## CT-5555 &#39;Fives&#39;                   2       3         6      6        1</code></pre>
+## Ahsoka Tano                       1       0         8      5        0
+## Biggs Darklighter                 2      10         3      0        9
+## Boba Fett                         0       5        10     10        0
+## Chief Nebit                       6       7         5      1        7
+## CT-21-0408 &#39;Echo&#39;                 8       2         9      4        8
+## CT-5555 &#39;Fives&#39;                   0      10         3      8       10</code></pre>
 </div>
 <div id="let-the-shenanigans-begin" class="section level2">
 <h2>Let the shenanigans begin!!</h2>
