@@ -2,7 +2,9 @@
 title: "Star Wars: Galaxy of Heroes - who knew a mobile game could be so complicated?!"
 date: "2017-12-29"
 author: "Jamie Lendrum"
-output: html_notebook
+output: 
+  html_notebook:
+    toc: true
 ---
 
 ## How I started playing
