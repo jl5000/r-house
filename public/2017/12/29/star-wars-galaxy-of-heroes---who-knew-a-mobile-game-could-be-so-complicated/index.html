@@ -335,15 +335,16 @@ rm(extra_rows, ghost_mod, ghost_mods)
 dim(mods_info)</code></pre>
 <pre><code>## [1] 246  16</code></pre>
 <p>The final piece of information needed is what weightings to give the various stats, and also what importance to place on various toons. The intention was to allow the user to focus on their most used toons, and to also allow the user to define which stats they would like the program to focus on enhancing for each toon. For now, I just assigned these weightings randomly with an integer:</p>
-<pre class="r"><code>toon_priority &lt;- sample(0:20, 
+<pre class="r"><code>set.seed(50)
+toon_priority &lt;- sample(0:20, 
                         size=length(toon_list),
                         replace = TRUE)
 names(toon_priority) &lt;- toon_list
 head(toon_priority)</code></pre>
 <pre><code>##       Ahsoka Tano Biggs Darklighter         Boba Fett       Chief Nebit 
-##                16                 9                14                19 
+##                14                 9                 4                16 
 ## CT-21-0408 &#39;Echo&#39;   CT-5555 &#39;Fives&#39; 
-##                 2                 2</code></pre>
+##                10                 0</code></pre>
 <pre class="r"><code>toon_stat_priority &lt;- matrix(sample(0:10,
                                     size = length(toon_list)*length(stat_names),
                                     replace = TRUE),
@@ -353,26 +354,26 @@ rownames(toon_stat_priority) &lt;- toon_list
 colnames(toon_stat_priority) &lt;- stat_names
 head(toon_stat_priority)</code></pre>
 <pre><code>##                   Speed Speed % Potency % Tenacity % Offense Offense %
-## Ahsoka Tano           1       9        10         10       1         2
-## Biggs Darklighter     8       7         4          0       8        10
-## Boba Fett             0       3         7          1       3         1
-## Chief Nebit           5       5         4          2       5         2
-## CT-21-0408 &#39;Echo&#39;     4       7         1          1       7         3
-## CT-5555 &#39;Fives&#39;       7      10         1          7       2         6
+## Ahsoka Tano           9       3         6          7       2         1
+## Biggs Darklighter     3       5         5          5       7         8
+## Boba Fett             1       5         5          3       3         2
+## Chief Nebit           0       0         2          4       9         1
+## CT-21-0408 &#39;Echo&#39;     7       0         0          9       4         7
+## CT-5555 &#39;Fives&#39;      10       7         0          4       5         9
 ##                   Protection Protection % Critical Chance %
-## Ahsoka Tano                3            5                 9
-## Biggs Darklighter          3           10                 5
-## Boba Fett                  0            7                 7
-## Chief Nebit                1            3                 9
-## CT-21-0408 &#39;Echo&#39;          9            9                 2
-## CT-5555 &#39;Fives&#39;            2            3                 7
+## Ahsoka Tano                3            9                 7
+## Biggs Darklighter          0           10                 3
+## Boba Fett                  5            2                 4
+## Chief Nebit                5            5                 8
+## CT-21-0408 &#39;Echo&#39;         10            1                 4
+## CT-5555 &#39;Fives&#39;           10            3                 8
 ##                   Critical Damage % Defense Defense % Health Health %
-## Ahsoka Tano                      10       5         5      9        6
-## Biggs Darklighter                 8       3         7      6        6
-## Boba Fett                         3       1         1      7        2
-## Chief Nebit                       0       5         8      9        6
-## CT-21-0408 &#39;Echo&#39;                 5       8         5      0        0
-## CT-5555 &#39;Fives&#39;                  10       7         1      5        7</code></pre>
+## Ahsoka Tano                       7       5         8      1        0
+## Biggs Darklighter                 3       9         0      4        8
+## Boba Fett                         9       7         6      5        0
+## Chief Nebit                       6       7         9     10        8
+## CT-21-0408 &#39;Echo&#39;                 2       9         8      1        7
+## CT-5555 &#39;Fives&#39;                   4       0         3      5       10</code></pre>
 </div>
 <div id="let-the-shenanigans-begin" class="section level2">
 <h2>Let the shenanigans begin!!</h2>
@@ -487,7 +488,7 @@ slot_perms &lt;- matrix(0, nrow=permutations, ncol=length(toon_list))
 
 top_perms &lt;- array(0, c(top_permutations, length(toon_list), length(slots)))</code></pre>
 <p>The code below loops through each shape to find the best per-shape permutations. Since it’s operating on each shape independently, a variable <code>calc_bonuses</code> ensures that the <code>overall_score</code> function does not try to calculate set bonuses, since that requires looking across shapes in a mod set.</p>
-<p>The first code chunk in the loop checks whether there are ghost mods AND ghost toons and then goes through each Ghost mod and permutation about to be generated and ensures it is assigned to a ghost toon (so that the problem space is reduced as much as possible). The second code chunk goes on to randomly assign the other mods (I neglected to set any random number seed, although this is easily fixed).</p>
+<p>The first code chunk in the loop checks whether there are ghost mods AND ghost toons and then goes through each Ghost mod and permutation about to be generated and ensures it is assigned to a ghost toon (so that the problem space is reduced as much as possible). The second code chunk goes on to randomly assign the other mods.</p>
 <p>The third code chunk populates the <code>mod_assignment</code> array and goes on to calculate the scores for each assignment permutation. The final chunk finds the top scoring assignment permutations. It’s worth noting that I wrote my own <code>top_n()</code> function, not realising one already existed in the <code>dplyr</code> package! I’ve left it out here and I’ve not tested whether the code still works using the <code>dplyr</code> function.</p>
 <pre class="r"><code>calc_bonuses &lt;- FALSE
 for (i in 1:length(slots)) {

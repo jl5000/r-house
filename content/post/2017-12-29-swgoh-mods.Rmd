@@ -240,6 +240,7 @@ dim(mods_info)
 The final piece of information needed is what weightings to give the various stats, and also what importance to place on various toons. The intention was to allow the user to focus on their most used toons, and to also allow the user to define which stats they would like the program to focus on enhancing for each toon. For now, I just assigned these weightings randomly with an integer:
 
 ```{r}
+set.seed(50)
 toon_priority <- sample(0:20, 
                         size=length(toon_list),
                         replace = TRUE)
@@ -381,7 +382,7 @@ top_perms <- array(0, c(top_permutations, length(toon_list), length(slots)))
 
 The code below loops through each shape to find the best per-shape permutations. Since it's operating on each shape independently, a variable `calc_bonuses` ensures that the `overall_score` function does not try to calculate set bonuses, since that requires looking across shapes in a mod set.
 
-The first code chunk in the loop checks whether there are ghost mods AND ghost toons and then goes through each Ghost mod and permutation about to be generated and ensures it is assigned to a ghost toon (so that the problem space is reduced as much as possible). The second code chunk goes on to randomly assign the other mods (I neglected to set any random number seed, although this is easily fixed).
+The first code chunk in the loop checks whether there are ghost mods AND ghost toons and then goes through each Ghost mod and permutation about to be generated and ensures it is assigned to a ghost toon (so that the problem space is reduced as much as possible). The second code chunk goes on to randomly assign the other mods.
 
 The third code chunk populates the `mod_assignment` array and goes on to calculate the scores for each assignment permutation. The final chunk finds the top scoring assignment permutations. It's worth noting that I wrote my own `top_n()` function, not realising one already existed in the `dplyr` package! I've left it out here and I've not tested whether the code still works using the `dplyr` function.
 
