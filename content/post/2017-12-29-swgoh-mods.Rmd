@@ -2,7 +2,7 @@
 title: "Star Wars: Galaxy of Heroes - who knew a mobile game could be so complicated?!"
 date: "2017-12-29"
 author: "Jamie Lendrum"
-output: 
+output:
   blogdown::html_page:
     toc: true
 ---
