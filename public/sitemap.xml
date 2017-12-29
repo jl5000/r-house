@@ -22,6 +22,18 @@
   </url>
   
   <url>
+    <loc>/tags/data-science/</loc>
+    <lastmod>2017-12-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/datacamp/</loc>
+    <lastmod>2017-12-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/tags/mods/</loc>
     <lastmod>2017-12-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -30,6 +42,12 @@
   <url>
     <loc>/post/</loc>
     <lastmod>2017-12-29T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/python/</loc>
+    <lastmod>2017-12-28T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -65,7 +83,13 @@
   
   <url>
     <loc>/tags/</loc>
-    <lastmod>2017-12-29T00:00:00+00:00</lastmod>
+    <lastmod>2017-12-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/training/</loc>
+    <lastmod>2017-12-28T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
