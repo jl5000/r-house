@@ -1,4 +1,4 @@
-baseurl = "/"
+baseurl = "https://r-house.netlify.com/"
 languageCode = "en-us"
 title = "R-house"
 theme = "hugo-lithium-theme"
