@@ -30,6 +30,6 @@ That's it! Once my GitHub repository updates, Netlify automatically refreshes my
 
 My task now is to figure out how to use a different Hugo theme without breaking everything!
 
-*UPDATE 2017-30-12*
+*UPDATE 2017-31-12*
 
-Coming soon!
+Coming soon!...
