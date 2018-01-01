@@ -37,6 +37,6 @@ After reading the `blogdown` documentation a bit more carefully, I've modified m
 
 * Deleting the `public/` folder and pushing the changes to GitHub; 
 * Adding the `public/` folder to the .gitignore file and pushing to GitHub;
-* Modifying my Netlify settings to build using the `hugo` build command;
+* Modifying my Netlify settings to build using the `hugo_0.31` build command;
 
 Then I could replace step 2 with running a `blogdown::serve_site()` command so I can view a local version of my website and see updates happen as I make them. This automatically builds the necessary HTML pages for RMarkdown pages (as Hugo cannot do it itself).
