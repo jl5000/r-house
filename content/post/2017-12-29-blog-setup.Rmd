@@ -30,6 +30,12 @@ That's it! Once my GitHub repository updates, Netlify automatically refreshes my
 
 My task now is to figure out how to use a different Hugo theme without breaking everything!
 
-*UPDATE 2017-31-12*
+*UPDATE 2018-01-01*
 
-Coming soon!...
+After reading the `blogdown` documentation a bit more carefully, I've modified my workflow so I let Netlify build my website for me. This required making the following changes:
+
+* Deleting the `public/` folder and pushing the changes to GitHub; 
+* Adding the `public/` folder to the .gitignore file and pushing to GitHub;
+* Modifying my Netlify settings to build using the `hugo_0.19` command;
+
+Then I could replace step 2 with running a `blogdown::serve_site()` command so I can view a local version of my website and see updates happen as I make them. This automatically builds the necessary HTML pages for RMarkdown pages (as Hugo cannot do it itself).
