@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Github on R-house</title>
+    <link>https://r-house.netlify.com/tags/github/</link>
+    <description>Recent content in Github on R-house</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 29 Dec 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://r-house.netlify.com/tags/github/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>RStudio &#43; Blogdown &#43; Github &#43; Netlify = A winning formula</title>
+      <link>https://r-house.netlify.com/2017/12/29/rstudio---blogdown---github---netlify--a-winning-formula/</link>
+      <pubDate>Fri, 29 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://r-house.netlify.com/2017/12/29/rstudio---blogdown---github---netlify--a-winning-formula/</guid>
+      <description>I thought it was worth posting about how I set up this blog as I had enormous trouble setting it up. I’d never done anything like this before and so some Google searching exposed me to many different technologies, but I had no clue what they did, which were best/easiest to work with and which combination I needed to use them in.
+First off, big thanks go to John Muschelli and his YouTube video which got me up and running in no time.</description>
+    </item>
+    
+  </channel>
+</rss>

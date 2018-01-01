@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R-house</title>
+    <link>https://r-house.netlify.com/</link>
+    <description>Recent content on R-house</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 29 Dec 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://r-house.netlify.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>RStudio &#43; Blogdown &#43; Github &#43; Netlify = A winning formula</title>
+      <link>https://r-house.netlify.com/2017/12/29/rstudio---blogdown---github---netlify--a-winning-formula/</link>
+      <pubDate>Fri, 29 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://r-house.netlify.com/2017/12/29/rstudio---blogdown---github---netlify--a-winning-formula/</guid>
+      <description>I thought it was worth posting about how I set up this blog as I had enormous trouble setting it up. I’d never done anything like this before and so some Google searching exposed me to many different technologies, but I had no clue what they did, which were best/easiest to work with and which combination I needed to use them in.
+First off, big thanks go to John Muschelli and his YouTube video which got me up and running in no time.</description>
+    </item>
+    
+    <item>
+      <title>Star Wars: Galaxy of Heroes - who knew a mobile game could be so complicated?!</title>
+      <link>https://r-house.netlify.com/2017/12/29/star-wars-galaxy-of-heroes---who-knew-a-mobile-game-could-be-so-complicated/</link>
+      <pubDate>Fri, 29 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://r-house.netlify.com/2017/12/29/star-wars-galaxy-of-heroes---who-knew-a-mobile-game-could-be-so-complicated/</guid>
+      <description>How I started playingWhat are mods??Laying the groundworkReading in game dataCleaning it upLet the shenanigans begin!!Attempt 2: Brute force…The eventual resignation…How I started playingBack in 2015, during the boring period between Christmas and New Year, I decided to try out a Star Wars mobile game. Star Wars: Galaxy of Heroes is essentially a jazzed up version of Top Trumps where you collect characters, upgrade them, and use them to earn rewards.</description>
+    </item>
+    
+    <item>
+      <title>Welcome!</title>
+      <link>https://r-house.netlify.com/2017/12/28/welcome/</link>
+      <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://r-house.netlify.com/2017/12/28/welcome/</guid>
+      <description>Welcome to my blog! A brief introduction to me is on the About page - head over there now before reading on!
+So I&amp;rsquo;ve been a Data Scientist for about 6 months now and already I feel like I&amp;rsquo;ve been on quite a journey. Below is a summary of some of the things I&amp;rsquo;ve been doing, some of the choices I&amp;rsquo;ve made, and where I want to go next.</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>https://r-house.netlify.com/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://r-house.netlify.com/about/</guid>
+      <description>Hello, my name is Jamie Lendrum and welcome to my blog R-house!
+I work as a Data Scientist for the UK Government and I&amp;rsquo;ve created this site to share my development and my personal projects using the R environment.
+I graduated from the University of Portsmouth in 2001 with a Bachelor&amp;rsquo;s degree in Mathematics, and spent the first 15 years of my career working as an Operational Analyst. This basically involves using a spectrum of analytical techniques ranging from complex simulation modelling to expert judgement (often simultaneously) in order to answer complex questions, usually focussed on how and where money should be spent.</description>
+    </item>
+    
+  </channel>
+</rss>
