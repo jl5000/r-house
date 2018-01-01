@@ -15,6 +15,7 @@ So if you want to go the route I have, you need several things installed on your
 * R
 * RStudio
 * The `blogdown` package (obtained via the usual `install.packages()` function)
+* Hugo - you can install it from the `blogdown` package
 * Git
 
 You will also need accounts with Github and Netlify.
