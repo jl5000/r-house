@@ -5,7 +5,7 @@ author: "Jamie Lendrum"
 output:
   blogdown::html_page:
     toc: true
-tags: [r, rstudio, star-wars, swgoh, mods]
+tags: [r, rstudio, star wars, swgoh, mods]
 ---
 
 ## How I started playing
@@ -452,5 +452,5 @@ The two approaches explained above are only a sample of approaches I tried, and 
 
 One of the things I would do if I had to do it all again would be to make use of the `map_*` functions from the `purrr` package to get away from all that looping. I think when I wrote this code I was still trying to get my head around it conceptually. I dread to think how bad this code looks to the R gurus out there!
 
-However, this little project really did cement my understanding of R data structures and gave me some invaluable R practice. I'd definitely be interested if anyone manages to crack this problem. From what I can tell, no one got as far as this from what I saw on the game forums.
+However, this little project really did cement my understanding of R data structures and gave me some invaluable R practice. I'd definitely be interested if anyone manages to crack this problem. From what I can tell, no one got as far as this from what I saw on the game forums, at least without doing [optimisation on one toon at a time](https://www.youtube.com/watch?v=QD2doYG_J3M).
 
