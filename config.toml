@@ -1,42 +1,102 @@
 baseurl = "https://r-house.netlify.com/"
-languageCode = "en-us"
+DefaultContentLanguage = "en"
+#DefaultContentLanguage = "ja"
 title = "R-house"
-theme = "hugo-lithium-theme"
+theme = "beautifulhugo"
+metaDataFormat = "yaml"
+pygmentsUseClasses = true
+pygmentCodeFences = true
 googleAnalytics = "UA-111740495-1"
 disqusShortname = "r-house"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
-[permalinks]
-    post = "/:year/:month/:day/:slug/"
+[Params]
+  subtitle = "Personal Experiences with R"
+  logo = "img/avatar-icon.png"
+  favicon = "img/favicon.ico"
+  dateFormat = "January 2, 2006"
+  commit = false
+  rss = true
+  comments = true
+  readingTime = true
+  description = "R-house by Jamie Lendrum"
+#  gcse = "012345678901234567890:abcdefghijk" # Get your code from google.com/cse. Make sure to go to "Look and Feel" and change Layout to "Full Width" and Theme to "Classic"
+
+#[[Params.bigimg]]
+#  src = "img/triangle.jpg"
+#  desc = "Triangle"
+#[[Params.bigimg]]
+#  src = "img/sphere.jpg"
+#  desc = "Sphere"
+#  # position: see values of CSS background-position.
+#  position = "center top"
+#[[Params.bigimg]]
+#  src = "img/hexagon.jpg"
+#  desc = "Hexagon"
+
+[Author]
+  name = "Jamie Lendrum"
+ # website = "yourwebsite.com"
+  email = "jalendrum@gmail.com"
+#  facebook = "username"
+#  googleplus = "+username" # or xxxxxxxxxxxxxxxxxxxxx
+  github = "jl5000"
+#  gitlab = "username"
+#  twitter = "username"
+#  reddit = "username"
+  linkedin = "jamie-lendrum"
+#  xing = "username"
+#  stackoverflow = "users/XXXXXXX/username"
+#  snapchat = "username"
+#  instagram = "username"
+#  youtube = "user/username" # or channel/channelname
+#  soundcloud = "username"
+#  spotify = "username"
+#  bandcamp = "username"
+#  itchio = "username"
+#  vk = "username"
+#  paypal = "username"
+#  telegram = "username"
+
+[[menu.main]]
+    name = "Blog"
+    url = ""
+    weight = 1
 
 [[menu.main]]
     name = "About"
-    url = "/about/"
+    url = "page/about/"
+    weight = 2
+
+#[[menu.main]]
+#    identifier = "samples"
+#    name = "Samples"
+#    weight = 2
+
+#[[menu.main]]
+#    parent = "samples"
+ #   name = "Big Image Sample"
+#    url = "post/2017-03-07-bigimg-sample"
+ #   weight = 1
+
+#[[menu.main]]
+#    parent = "samples"
+#    name = "Math Sample"
+#    url = "post/2017-03-05-math-sample"
+#    weight = 2
+
+#[[menu.main]]
+#    parent = "samples"
+#    name = "Code Sample"
+#    url = "post/2016-03-08-code-sample"
+#    weight = 3
+
 [[menu.main]]
-    name = "GitHub"
-    url = "https://github.com/jl5000/"
-[[menu.main]]
-    name = "LinkedIn"
-    url = "https://www.linkedin.com/in/jamie-lendrum/"
+    name = "Tags"
+    url = "tags"
+    weight = 3
+    
 [[menu.main]]
     name = "R-Bloggers"
     url = "https://www.r-bloggers.com/"
-
-[params]
-    description = "R-house by Jamie Lendrum"
-
-    # options for highlight.js (version, additional languages, and theme)
-    highlightjsVersion = "9.11.0"
-    highlightjsCDN = "//cdn.bootcss.com"
-    highlightjsLang = ["r", "yaml"]
-    highlightjsTheme = "github"
-
-    MathJaxCDN = "//cdn.bootcss.com"
-    MathJaxVersion = "2.7.1"
-
-    [params.logo]
-    url = "logo.png"
-    width = 50
-    height = 50
-    alt = "Logo"
-
+    weight = 4  

@@ -1,5 +1,6 @@
 ---
 title: "About"
+comments: false
 ---
 
 Hello, my name is Jamie Lendrum and welcome to my blog *R-house*!

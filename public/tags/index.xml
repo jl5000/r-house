@@ -5,7 +5,8 @@
     <link>https://r-house.netlify.com/tags/</link>
     <description>Recent content in Tags on R-house</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <managingEditor>jalendrum@gmail.com (Jamie Lendrum)</managingEditor>
+    <webMaster>jalendrum@gmail.com (Jamie Lendrum)</webMaster>
     <lastBuildDate>Fri, 29 Dec 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://r-house.netlify.com/tags/index.xml" rel="self" type="application/rss+xml" />
@@ -15,7 +16,7 @@
       <title>Blog</title>
       <link>https://r-house.netlify.com/tags/blog/</link>
       <pubDate>Fri, 29 Dec 2017 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/blog/</guid>
       <description></description>
     </item>
@@ -24,7 +25,7 @@
       <title>Blogdown</title>
       <link>https://r-house.netlify.com/tags/blogdown/</link>
       <pubDate>Fri, 29 Dec 2017 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/blogdown/</guid>
       <description></description>
     </item>
@@ -33,7 +34,7 @@
       <title>Data Science</title>
       <link>https://r-house.netlify.com/tags/data-science/</link>
       <pubDate>Tue, 02 Jan 2018 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/data-science/</guid>
       <description></description>
     </item>
@@ -42,7 +43,7 @@
       <title>Datacamp</title>
       <link>https://r-house.netlify.com/tags/datacamp/</link>
       <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/datacamp/</guid>
       <description></description>
     </item>
@@ -51,7 +52,7 @@
       <title>Flickr</title>
       <link>https://r-house.netlify.com/tags/flickr/</link>
       <pubDate>Tue, 02 Jan 2018 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/flickr/</guid>
       <description></description>
     </item>
@@ -60,7 +61,7 @@
       <title>Git</title>
       <link>https://r-house.netlify.com/tags/git/</link>
       <pubDate>Tue, 02 Jan 2018 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/git/</guid>
       <description></description>
     </item>
@@ -69,7 +70,7 @@
       <title>Github</title>
       <link>https://r-house.netlify.com/tags/github/</link>
       <pubDate>Tue, 02 Jan 2018 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/github/</guid>
       <description></description>
     </item>
@@ -78,7 +79,7 @@
       <title>Hugo</title>
       <link>https://r-house.netlify.com/tags/hugo/</link>
       <pubDate>Fri, 29 Dec 2017 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/hugo/</guid>
       <description></description>
     </item>
@@ -87,7 +88,7 @@
       <title>Mods</title>
       <link>https://r-house.netlify.com/tags/mods/</link>
       <pubDate>Fri, 29 Dec 2017 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/mods/</guid>
       <description></description>
     </item>
@@ -96,7 +97,7 @@
       <title>Netlify</title>
       <link>https://r-house.netlify.com/tags/netlify/</link>
       <pubDate>Fri, 29 Dec 2017 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/netlify/</guid>
       <description></description>
     </item>
@@ -105,7 +106,7 @@
       <title>Python</title>
       <link>https://r-house.netlify.com/tags/python/</link>
       <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/python/</guid>
       <description></description>
     </item>
@@ -114,7 +115,7 @@
       <title>R</title>
       <link>https://r-house.netlify.com/tags/r/</link>
       <pubDate>Tue, 02 Jan 2018 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/r/</guid>
       <description></description>
     </item>
@@ -123,7 +124,7 @@
       <title>Rstudio</title>
       <link>https://r-house.netlify.com/tags/rstudio/</link>
       <pubDate>Tue, 02 Jan 2018 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/rstudio/</guid>
       <description></description>
     </item>
@@ -132,7 +133,7 @@
       <title>Star Wars</title>
       <link>https://r-house.netlify.com/tags/star-wars/</link>
       <pubDate>Fri, 29 Dec 2017 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/star-wars/</guid>
       <description></description>
     </item>
@@ -141,7 +142,7 @@
       <title>Swgoh</title>
       <link>https://r-house.netlify.com/tags/swgoh/</link>
       <pubDate>Fri, 29 Dec 2017 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/swgoh/</guid>
       <description></description>
     </item>
@@ -150,7 +151,7 @@
       <title>Training</title>
       <link>https://r-house.netlify.com/tags/training/</link>
       <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
-      
+      <author>jalendrum@gmail.com (Jamie Lendrum)</author>
       <guid>https://r-house.netlify.com/tags/training/</guid>
       <description></description>
     </item>

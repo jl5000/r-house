@@ -1,0 +1,42 @@
+baseurl = "https://r-house.netlify.com/"
+languageCode = "en-us"
+title = "R-house"
+theme = "hugo-lithium-theme"
+googleAnalytics = "UA-111740495-1"
+disqusShortname = "r-house"
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+
+[permalinks]
+    post = "/:year/:month/:day/:slug/"
+
+[[menu.main]]
+    name = "About"
+    url = "/about/"
+[[menu.main]]
+    name = "GitHub"
+    url = "https://github.com/jl5000/"
+[[menu.main]]
+    name = "LinkedIn"
+    url = "https://www.linkedin.com/in/jamie-lendrum/"
+[[menu.main]]
+    name = "R-Bloggers"
+    url = "https://www.r-bloggers.com/"
+
+[params]
+    description = "R-house by Jamie Lendrum"
+
+    # options for highlight.js (version, additional languages, and theme)
+    highlightjsVersion = "9.11.0"
+    highlightjsCDN = "//cdn.bootcss.com"
+    highlightjsLang = ["r", "yaml"]
+    highlightjsTheme = "github"
+
+    MathJaxCDN = "//cdn.bootcss.com"
+    MathJaxVersion = "2.7.1"
+
+    [params.logo]
+    url = "logo.png"
+    width = 50
+    height = 50
+    alt = "Logo"
+
