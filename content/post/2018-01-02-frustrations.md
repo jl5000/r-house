@@ -1,5 +1,5 @@
 ---
-title: "Cooking up big frustrations"
+title: "Learning is sometimes not fun"
 date: "2018-01-02"
 author: "Jamie Lendrum"
 tags: [r, rstudio, flickr, data science, git, github]
