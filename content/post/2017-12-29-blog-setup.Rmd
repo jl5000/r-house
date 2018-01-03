@@ -41,4 +41,4 @@ After reading the `blogdown` documentation a bit more carefully, I've modified m
 
 I've now replaced step 2 with running a `blogdown::serve_site()` command so I can view a local version of my website and see updates happen as I make them. This automatically builds the necessary HTML pages for RMarkdown pages (as Hugo cannot do it itself).
 
-Unfortunately, stopping the server crashes RStudio, so I have to run `options(blogdown.generator.server = TRUE)` before running it to stop it crashing when it's stopped. 
+Unfortunately, stopping the server crashes RStudio, so I have to run `options(blogdown.generator.server = TRUE)` before running it to stop it crashing when it's stopped. Helpfully, I've found I can create a .Rprofile file in the website root directory containing this command so it loads every automatically every time I load the project.
