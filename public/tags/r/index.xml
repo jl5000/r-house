@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>R on R-house</title>
-    <link>https://r-house.netlify.com/tags/r/</link>
+    <link>/tags/r/</link>
     <description>Recent content in R on R-house</description>
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>jalendrum@gmail.com (Jamie Lendrum)</managingEditor>
     <webMaster>jalendrum@gmail.com (Jamie Lendrum)</webMaster>
     <lastBuildDate>Tue, 02 Jan 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://r-house.netlify.com/tags/r/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Learning is sometimes not fun</title>
-      <link>https://r-house.netlify.com/post/2018-01-02-frustrations/</link>
+      <title>Sometimes learning is not fun</title>
+      <link>/post/2018-01-02-frustrations/</link>
       <pubDate>Tue, 02 Jan 2018 00:00:00 +0000</pubDate>
       <author>jalendrum@gmail.com (Jamie Lendrum)</author>
-      <guid>https://r-house.netlify.com/post/2018-01-02-frustrations/</guid>
+      <guid>/post/2018-01-02-frustrations/</guid>
       <description>Happy New Year!
 I&amp;rsquo;ve spent the time between Christmas and New Year being more productive than I would usually be, trying things out in R, some (relatively) successfully, others&amp;hellip;not so much.
 I thought it would be worth writing about how embarking on Data Science isn&amp;rsquo;t all plain sailing, and can at times be incredibly frustrating! You often see people who make everything seem so effortless and it&amp;rsquo;s easy to get such a skewed perception of how things are going to go.</description>
@@ -25,29 +25,29 @@ I thought it would be worth writing about how embarking on Data Science isn&amp;
     
     <item>
       <title>RStudio &#43; Blogdown &#43; Github &#43; Netlify = A winning formula</title>
-      <link>https://r-house.netlify.com/post/2017-12-29-blog-setup/</link>
+      <link>/post/2017-12-29-blog-setup/</link>
       <pubDate>Fri, 29 Dec 2017 00:00:00 +0000</pubDate>
       <author>jalendrum@gmail.com (Jamie Lendrum)</author>
-      <guid>https://r-house.netlify.com/post/2017-12-29-blog-setup/</guid>
+      <guid>/post/2017-12-29-blog-setup/</guid>
       <description>I thought it was worth posting about how I set up this blog as I had enormous trouble setting it up. I’d never done anything like this before and so some Google searching exposed me to many different technologies, but I had no clue what they did, which were best/easiest to work with and which combination I needed to use them in.
 First off, big thanks go to John Muschelli and his YouTube video which got me up and running in no time.</description>
     </item>
     
     <item>
       <title>Star Wars: Galaxy of Heroes - who knew a mobile game could be so complicated?!</title>
-      <link>https://r-house.netlify.com/post/2017-12-29-swgoh-mods/</link>
+      <link>/post/2017-12-29-swgoh-mods/</link>
       <pubDate>Fri, 29 Dec 2017 00:00:00 +0000</pubDate>
       <author>jalendrum@gmail.com (Jamie Lendrum)</author>
-      <guid>https://r-house.netlify.com/post/2017-12-29-swgoh-mods/</guid>
+      <guid>/post/2017-12-29-swgoh-mods/</guid>
       <description>How I started playingWhat are mods??Laying the groundworkReading in game dataCleaning it upLet the shenanigans begin!!Attempt 2: Brute force…The eventual resignation…How I started playingBack in 2015, during the boring period between Christmas and New Year, I decided to try out a Star Wars mobile game. Star Wars: Galaxy of Heroes is essentially a jazzed up version of Top Trumps where you collect characters, upgrade them, and use them to earn rewards.</description>
     </item>
     
     <item>
       <title>Welcome!</title>
-      <link>https://r-house.netlify.com/post/2017-12-28-welcome/</link>
+      <link>/post/2017-12-28-welcome/</link>
       <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
       <author>jalendrum@gmail.com (Jamie Lendrum)</author>
-      <guid>https://r-house.netlify.com/post/2017-12-28-welcome/</guid>
+      <guid>/post/2017-12-28-welcome/</guid>
       <description>Welcome to my blog! A brief introduction to me is on the About page - head over there now before reading on!
 So I&amp;rsquo;ve been a Data Scientist for about 6 months now and already I feel like I&amp;rsquo;ve been on quite a journey. Below is a summary of some of the things I&amp;rsquo;ve been doing, some of the choices I&amp;rsquo;ve made, and where I want to go next.</description>
     </item>
