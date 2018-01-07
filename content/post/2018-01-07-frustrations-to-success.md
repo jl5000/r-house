@@ -2,7 +2,7 @@
 title: "If at first you don't succeed..."
 date: "2018-01-07"
 author: "Jamie Lendrum"
-tags: [r, rstudio, flickr, data science, git, github]
+tags: [r, rstudio, flickr, data science, git, github, netlify]
 ---
 
 After having some time to ponder the issues I was having in my last post, I'm pleased to say that all three are resolved, or at least partially to my immediate satisfaction.
