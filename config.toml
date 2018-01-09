@@ -4,8 +4,11 @@ DefaultContentLanguage = "en"
 title = "R-house"
 theme = "beautifulhugo"
 metaDataFormat = "yaml"
+pygmentsStyle = "trac"
 pygmentsUseClasses = true
 pygmentCodeFences = true
+pygmentsCodefencesGuessSyntax = true
+pygmentOptions = "linenos=table"
 googleAnalytics = "UA-111740495-1"
 disqusShortname = "r-house"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
