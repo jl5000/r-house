@@ -5,7 +5,7 @@ comments: false
 
 ## Data Science introductory videos
 
-*Videos coming soon!*
+*Coming soon!*
 
 ## E-books
 
