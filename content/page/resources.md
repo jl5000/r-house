@@ -12,6 +12,7 @@ comments: false
 * [R for Data Science](http://r4ds.had.co.nz/)
 * [Happy Git and GitHub for the useR](http://happygitwithr.com/)
 * [blogdown: Creating Websites with R Markdown](https://bookdown.org/yihui/blogdown/)
+* [The tidyverse style guide](http://style.tidyverse.org/)
 
 ## R News / Blogs
 
