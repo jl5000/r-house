@@ -1,0 +1,124 @@
+---
+title: "Embarking on nested dataframes"
+date: "2018-01-21"
+author: "Jamie Lendrum"
+---
+
+
+
+<p>In a recent sprint, I was faced with the problem of carrying out analysis on data extracted from a database where there were several instances of the same table type and I wanted to do the same tasks on each of them. I know enough about the <code>tidyverse</code> to realise that this was a good opportunity to use functions such as <code>map()</code> and <code>nest()</code>. However, I fell at the first hurdle when the pressure of producing results meant I couldn’t spend the time I needed to get it to work…something to work on in slower time, hence this post.</p>
+<p>To give an example of how my problem was structured, I’m going to use a movie example. Say we have a number of movies, and each of these movies have their own set of tables:</p>
+<pre class="r"><code>library(tidyverse)
+
+pulp_fiction_cast &lt;- data_frame(cast_member = c(&quot;Uma Thurman&quot;, &quot;John Travolta&quot;),
+                                role = c(&quot;Mia Wallace&quot;, &quot;Vincent Vega&quot;))
+
+terminator_cast &lt;- data_frame(cast_member = c(&quot;Arnold Schwarzenegger&quot;, &quot;Linda Hamilton&quot;),
+                              role = c(&quot;T-101&quot;, &quot;Sarah Connor&quot;))
+
+pulp_fiction_critic_ratings &lt;- data_frame(critic = c(&quot;Reviewer1&quot;, &quot;Reviewer2&quot;),
+                                          score = c(8.1, 9))
+
+terminator_critic_ratings &lt;- data_frame(critic = c(&quot;Reviewer3&quot;, &quot;Reviewer4&quot;),
+                                        score = c(7.8, 8.5))
+
+pulp_fiction_cast</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##     cast_member         role
+##           &lt;chr&gt;        &lt;chr&gt;
+## 1   Uma Thurman  Mia Wallace
+## 2 John Travolta Vincent Vega</code></pre>
+<pre class="r"><code>terminator_cast</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##             cast_member         role
+##                   &lt;chr&gt;        &lt;chr&gt;
+## 1 Arnold Schwarzenegger        T-101
+## 2        Linda Hamilton Sarah Connor</code></pre>
+<pre class="r"><code>pulp_fiction_critic_ratings</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##      critic score
+##       &lt;chr&gt; &lt;dbl&gt;
+## 1 Reviewer1   8.1
+## 2 Reviewer2   9.0</code></pre>
+<pre class="r"><code>terminator_critic_ratings</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##      critic score
+##       &lt;chr&gt; &lt;dbl&gt;
+## 1 Reviewer3   7.8
+## 2 Reviewer4   8.5</code></pre>
+<p>Whereas above I’ve defined each dataframe explicitly, in reality I had a function which could return the dataframe I wanted from a database given the film name and table name.</p>
+<p>This was the type of setup I settled for; defining each dataframe separately and performing my analysis pipelines manually on each. Of particular note is that the number of movies and table types would increase as more information was loaded into the database. This was very laborious. What I really wanted was a way of storing all of this information in a single dataframe, by nesting the above dataframes within it. I could then store my analysis pipelines in functions which I could then loop over with the <code>map()</code> functions. So the single dataframe would look like the following:</p>
+<pre class="r"><code>(master &lt;- data_frame(movie_name = c(&quot;Pulp Fiction&quot;, &quot;Terminator&quot;),
+                     cast = c(&quot;pulp_fiction_cast df&quot;, &quot;terminator_cast df&quot;),
+                     critic_ratings = c(&quot;pulp_fiction_critic_ratings df&quot;, &quot;terminator_critic_ratings df&quot;)))</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##     movie_name                 cast                 critic_ratings
+##          &lt;chr&gt;                &lt;chr&gt;                          &lt;chr&gt;
+## 1 Pulp Fiction pulp_fiction_cast df pulp_fiction_critic_ratings df
+## 2   Terminator   terminator_cast df   terminator_critic_ratings df</code></pre>
+<p>In order to demonstrate the problem, I’ve defined a very rudimentary import function below to return a particular dataframe:</p>
+<pre class="r"><code>movie_names &lt;- c(&quot;Pulp Fiction&quot;, &quot;Terminator&quot;)
+table_names &lt;- c(&quot;Cast&quot;, &quot;Critic Ratings&quot;) 
+
+import_fn &lt;- function(movie_name, table_name){
+  if (movie_name == movie_names[1]) {
+    if (table_name == table_names[1]) {
+      pulp_fiction_cast
+    } else if (table_name == table_names[2]){
+      pulp_fiction_critic_ratings
+    }
+  } else if (movie_name == movie_names[2]) {
+    if (table_name == table_names[1]) {
+      terminator_cast
+    } else if (table_name == table_names[2]){
+      terminator_critic_ratings
+    }
+  }
+}
+
+import_fn(movie_names[2], table_names[2])</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##      critic score
+##       &lt;chr&gt; &lt;dbl&gt;
+## 1 Reviewer3   7.8
+## 2 Reviewer4   8.5</code></pre>
+<p>My first attempt to create the dataframe I wanted looked like this:</p>
+<pre class="r"><code>master &lt;- map(movie_names, function(x){map(table_names, import_fn, movie_name = x)})
+str(master)</code></pre>
+<pre><code>## List of 2
+##  $ :List of 2
+##   ..$ :Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;: 2 obs. of  2 variables:
+##   .. ..$ cast_member: chr [1:2] &quot;Uma Thurman&quot; &quot;John Travolta&quot;
+##   .. ..$ role       : chr [1:2] &quot;Mia Wallace&quot; &quot;Vincent Vega&quot;
+##   ..$ :Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;: 2 obs. of  2 variables:
+##   .. ..$ critic: chr [1:2] &quot;Reviewer1&quot; &quot;Reviewer2&quot;
+##   .. ..$ score : num [1:2] 8.1 9
+##  $ :List of 2
+##   ..$ :Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;: 2 obs. of  2 variables:
+##   .. ..$ cast_member: chr [1:2] &quot;Arnold Schwarzenegger&quot; &quot;Linda Hamilton&quot;
+##   .. ..$ role       : chr [1:2] &quot;T-101&quot; &quot;Sarah Connor&quot;
+##   ..$ :Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;: 2 obs. of  2 variables:
+##   .. ..$ critic: chr [1:2] &quot;Reviewer3&quot; &quot;Reviewer4&quot;
+##   .. ..$ score : num [1:2] 7.8 8.5</code></pre>
+<p>This initial attempt was just to dive straight in with something to see what I got. I knew I’d get a list of lists by using the bare <code>map()</code> function, and despite changing to <code>map_df()</code> I still didn’t get what I was after. But at least all the data is in there and it’s generalised regardless of how many movies or tables I have.</p>
+<p>After a few days thinking I knew I wanted to start with a movie name column and then do a series of <code>mutate()</code> commands joining on lists of dataframes. As a starter for ten using the cast table:</p>
+<pre class="r"><code>master &lt;- data_frame(Movie = movie_names) %&gt;%
+            mutate(map(movie_names, import_fn, table_name = table_names[1]))
+str(master)</code></pre>
+<pre><code>## Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:    2 obs. of  2 variables:
+##  $ Movie                                                   : chr  &quot;Pulp Fiction&quot; &quot;Terminator&quot;
+##  $ map(movie_names, import_fn, table_name = table_names[1]):List of 2
+##   ..$ :Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;: 2 obs. of  2 variables:
+##   .. ..$ cast_member: chr  &quot;Uma Thurman&quot; &quot;John Travolta&quot;
+##   .. ..$ role       : chr  &quot;Mia Wallace&quot; &quot;Vincent Vega&quot;
+##   ..$ :Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;: 2 obs. of  2 variables:
+##   .. ..$ cast_member: chr  &quot;Arnold Schwarzenegger&quot; &quot;Linda Hamilton&quot;
+##   .. ..$ role       : chr  &quot;T-101&quot; &quot;Sarah Connor&quot;</code></pre>
+<p>Two issues now: how to generalise to several columns instead of just one, and how to give it the right heading - although I could always name the columns afterwards using <code>names()</code>. My current best effort looks like the following:</p>
+<pre class="r"><code>master &lt;- data_frame(Movie = movie_names) %&gt;%
+          bind_cols(
+            map_df(table_names, 
+                   function(x) {mutate(., map(movie_names, import_fn, table_name = x))})
+          )
+str(master)</code></pre>
+<p>This gives an error, but I’ll keep plugging away at it…</p>
