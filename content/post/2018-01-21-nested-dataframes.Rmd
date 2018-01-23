@@ -2,6 +2,7 @@
 title: "Embarking on nested dataframes"
 date: "2018-01-21"
 author: "Jamie Lendrum"
+tags: [r, tidyverse]
 ---
 
 In a recent sprint, I was faced with the problem of carrying out analysis on data extracted from a database where there were several instances of the same table type and I wanted to do the same tasks on each of them. I know enough about the `tidyverse` to realise that this was a good opportunity to use functions such as `map()` and `nest()`. However, I fell at the first hurdle when the pressure of producing results meant I couldn't spend the time I needed to get it to work...something to work on in slower time, hence this post.
@@ -93,3 +94,25 @@ master <- data_frame(Movie = movie_names) %>%
 str(master)
 ```
  This gives an error, but I'll keep plugging away at it...
+ 
+## Update 2018-01-23
+ 
+Whilst doing some more research into the `tidyverse`, I discovered a neat function `set_names()` in the `purrr` package which allows you to set the `names()` property of your dataframes within a tidy pipeline, so any solution I come up with can include `%>% set_names(table_names)` and I'm good to go! (This reminds me why I used the base R function `setNames()` in my Star Wars post).
+ 
+Whilst I was looking into a solution to my problem, I discovered the `reduce()` function which uses a two argument function, such as `bind_cols()` to reduce a list down to a single element. I don't know if my attempt below is getting me closer or further away! 
+
+```{r eval = FALSE}
+# Function to take in two table names, make them into two lists of dataframes, and bind them
+bind_table_cols <- function(x, y) {
+  x_col <- map(movie_names, import_fn, table_name = x)
+  y_col <- map(movie_names, import_fn, table_name = y)
+  bind_cols(x_col, y_col)
+}
+
+master <- reduce(table_names, bind_table_cols) %>%
+            set_names(table_names) %>%
+            data_frame(Movie = movie_names, .)
+            
+```
+
+

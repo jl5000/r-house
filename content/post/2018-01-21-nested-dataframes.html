@@ -2,6 +2,7 @@
 title: "Embarking on nested dataframes"
 date: "2018-01-21"
 author: "Jamie Lendrum"
+tags: [r, tidyverse]
 ---
 
 
@@ -122,3 +123,18 @@ str(master)</code></pre>
           )
 str(master)</code></pre>
 <p>This gives an error, but I’ll keep plugging away at it…</p>
+<div id="update-2018-01-23" class="section level2">
+<h2>Update 2018-01-23</h2>
+<p>Whilst doing some more research into the <code>tidyverse</code>, I discovered a neat function <code>set_names()</code> in the <code>purrr</code> package which allows you to set the <code>names()</code> property of your dataframes within a tidy pipeline, so any solution I come up with can include <code>%&gt;% set_names(table_names)</code> and I’m good to go! (This reminds me why I used the base R function <code>setNames()</code> in my Star Wars post).</p>
+<p>Whilst I was looking into a solution to my problem, I discovered the <code>reduce()</code> function which uses a two argument function, such as <code>bind_cols()</code> to reduce a list down to a single element. I don’t know if my attempt below is getting me closer or further away!</p>
+<pre class="r"><code># Function to take in two table names, make them into two lists of dataframes, and bind them
+bind_table_cols &lt;- function(x, y) {
+  x_col &lt;- map(movie_names, import_fn, table_name = x)
+  y_col &lt;- map(movie_names, import_fn, table_name = y)
+  bind_cols(x_col, y_col)
+}
+
+master &lt;- reduce(table_names, bind_table_cols) %&gt;%
+            set_names(table_names) %&gt;%
+            data_frame(Movie = movie_names, .)</code></pre>
+</div>
