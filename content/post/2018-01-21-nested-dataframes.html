@@ -156,5 +156,14 @@ master</code></pre>
 ##                   &lt;chr&gt;        &lt;chr&gt;
 ## 1 Arnold Schwarzenegger        T-101
 ## 2        Linda Hamilton Sarah Connor</code></pre>
-<p>The <code>crossing()</code> function was a new one on me. The moral of the story? Don’t try to create something in it’s final form straight off the bat!</p>
+<pre class="r"><code>master %&gt;%
+      filter(movie_names == &quot;Terminator&quot;) %&gt;%
+      select(Cast) %&gt;%
+      unnest()</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##             cast_member         role
+##                   &lt;chr&gt;        &lt;chr&gt;
+## 1 Arnold Schwarzenegger        T-101
+## 2        Linda Hamilton Sarah Connor</code></pre>
+<p>The <code>crossing()</code> function was a new one on me. The moral of the story? Don’t try to create something in its final form straight off the bat!</p>
 </div>
