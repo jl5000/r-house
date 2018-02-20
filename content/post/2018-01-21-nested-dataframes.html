@@ -138,3 +138,23 @@ master &lt;- reduce(table_names, bind_table_cols) %&gt;%
             set_names(table_names) %&gt;%
             data_frame(Movie = movie_names, .)</code></pre>
 </div>
+<div id="update-2018-02-20" class="section level2">
+<h2>Update 2018-02-20</h2>
+<p>Thanks to the clever people on Stack Overflow, I’ve now got an embarrassingly simple but elegant solution to this problem:</p>
+<pre class="r"><code>master &lt;- crossing(movie_names, table_names) %&gt;%
+                    mutate(df = map2(movie_names, table_names, import_fn)) %&gt;%
+                    spread(table_names, df)
+master</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##    movie_names             Cast `Critic Ratings`
+## *        &lt;chr&gt;           &lt;list&gt;           &lt;list&gt;
+## 1 Pulp Fiction &lt;tibble [2 x 2]&gt; &lt;tibble [2 x 2]&gt;
+## 2   Terminator &lt;tibble [2 x 2]&gt; &lt;tibble [2 x 2]&gt;</code></pre>
+<pre class="r"><code>master$Cast[[2]]</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##             cast_member         role
+##                   &lt;chr&gt;        &lt;chr&gt;
+## 1 Arnold Schwarzenegger        T-101
+## 2        Linda Hamilton Sarah Connor</code></pre>
+<p>The <code>crossing()</code> function was a new one on me. The moral of the story? Don’t try to create something in it’s final form straight off the bat!</p>
+</div>

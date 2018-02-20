@@ -114,5 +114,16 @@ master <- reduce(table_names, bind_table_cols) %>%
             data_frame(Movie = movie_names, .)
             
 ```
+## Update 2018-02-20
 
+Thanks to the clever people on Stack Overflow, I've now got an embarrassingly simple but elegant solution to this problem:
 
+```{r}
+master <- crossing(movie_names, table_names) %>%
+                    mutate(df = map2(movie_names, table_names, import_fn)) %>%
+                    spread(table_names, df)
+master
+master$Cast[[2]]
+```
+
+The `crossing()` function was a new one on me. The moral of the story? Don't try to create something in it's final form straight off the bat!
