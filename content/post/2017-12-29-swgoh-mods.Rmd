@@ -83,7 +83,7 @@ max_stats <- data.frame(Max.Primary = max_prim * max_nprim,
                         stringsAsFactors = FALSE)
 
 rm(max_prim, max_nprim, max_sec, max_nsec, max_set_bonus)
-frameWidget(datatable(max_stats))
+frameWidget(datatable(max_stats), height = 500, width = '100%')
 ```
 
 Next, I define how many mods are needed to obtain the set bonuses (the zeroes mean that there are no set bonuses for that stat). The lower (and upper) vector gives the % enhancement in that stat if you reach that number (and if all of the mods in that set are at maximum level)

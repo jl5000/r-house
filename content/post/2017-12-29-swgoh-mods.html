@@ -85,8 +85,8 @@ max_stats &lt;- data.frame(Max.Primary = max_prim * max_nprim,
                         stringsAsFactors = FALSE)
 
 rm(max_prim, max_nprim, max_sec, max_nsec, max_set_bonus)
-frameWidget(datatable(max_stats))</code></pre>
-<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+frameWidget(datatable(max_stats), height = 500, width = &#39;100%&#39;)</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:500px;" class="widgetframe html-widget"></div>
 <script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2017-12-29-swgoh-mods_files/figure-html//widgets/widget_unnamed-chunk-3.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 <p>Next, I define how many mods are needed to obtain the set bonuses (the zeroes mean that there are no set bonuses for that stat). The lower (and upper) vector gives the % enhancement in that stat if you reach that number (and if all of the mods in that set are at maximum level)</p>
 <pre class="r"><code>set_bonus_n &lt;- c(0,4,2,2,0,4,0,0,2,4,0,2,0,2)
@@ -101,8 +101,6 @@ set_bonus_rules &lt;- data.frame(Number = set_bonus_n,
 
 rm(set_bonus_n, set_bonus_lower, set_bonus_upper)
 frameWidget(datatable(set_bonus_rules))</code></pre>
-<pre><code>## Warning in dir.create(target_dir): &#39;datatables_libs\crosstalk&#39; already
-## exists</code></pre>
 <div id="htmlwidget-2" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
 <script type="application/json" data-for="htmlwidget-2">{"x":{"url":"/post/2017-12-29-swgoh-mods_files/figure-html//widgets/widget_unnamed-chunk-4.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
@@ -133,8 +131,6 @@ mods_info &lt;- data.frame(Mod.ID = mods_json$all_mods$mod_uid,
 
 rm(mods_json)
 frameWidget(datatable(mods_info))</code></pre>
-<pre><code>## Warning in dir.create(target_dir): &#39;datatables_libs\crosstalk&#39; already
-## exists</code></pre>
 <div id="htmlwidget-3" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
 <script type="application/json" data-for="htmlwidget-3">{"x":{"url":"/post/2017-12-29-swgoh-mods_files/figure-html//widgets/widget_unnamed-chunk-5.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 <p>Since a typical user would have hundreds of mods, I filtered this list down to only contain the best; maximum pips, maximum level, and some speed enhancement (“speed is king”!). As I’ll discuss later, problem size becomes a real issue!</p>
@@ -275,9 +271,6 @@ toon_priority</code></pre>
 rownames(toon_stat_priority) &lt;- toon_list
 colnames(toon_stat_priority) &lt;- stat_names
 frameWidget(datatable(toon_stat_priority))</code></pre>
-<pre><code>## Warning in dir.create(target_dir): &#39;datatables_libs\dt-core&#39; already exists</code></pre>
-<pre><code>## Warning in dir.create(target_dir): &#39;datatables_libs\crosstalk&#39; already
-## exists</code></pre>
 <div id="htmlwidget-4" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
 <script type="application/json" data-for="htmlwidget-4">{"x":{"url":"/post/2017-12-29-swgoh-mods_files/figure-html//widgets/widget_unnamed-chunk-11.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
@@ -368,15 +361,6 @@ colnames(mod_assignment) &lt;- mod_list</code></pre>
   as.data.frame()
 names(mod_list_shape) &lt;- slots
 frameWidget(datatable(mod_list_shape))</code></pre>
-<pre><code>## Warning in dir.create(target_dir): &#39;datatables_libs\dt-core&#39; already exists</code></pre>
-<pre><code>## Warning in file.create(to[okay]): cannot create file &#39;datatables_libs/dt-
-## core/js/jquery.dataTables.min.js&#39;, reason &#39;Permission denied&#39;</code></pre>
-<pre><code>## Warning in file.create(to[okay]): cannot create file &#39;datatables_libs/dt-
-## core/css/jquery.dataTables.min.css&#39;, reason &#39;Permission denied&#39;</code></pre>
-<pre><code>## Warning in file.create(to[okay]): cannot create file &#39;datatables_libs/dt-
-## core/css/jquery.dataTables.extra.css&#39;, reason &#39;Permission denied&#39;</code></pre>
-<pre><code>## Warning in dir.create(target_dir): &#39;datatables_libs\crosstalk&#39; already
-## exists</code></pre>
 <div id="htmlwidget-5" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
 <script type="application/json" data-for="htmlwidget-5">{"x":{"url":"/post/2017-12-29-swgoh-mods_files/figure-html//widgets/widget_unnamed-chunk-15.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 <p>I then define how many permutations of mod assignments I’m going to generate, and how many of the best ones I’m going to use to find the best overall solution:</p>
