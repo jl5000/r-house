@@ -60,6 +60,13 @@ stat_names <- c("Speed",
 
 ```
 
+For the purposes of this blog post I'm also going to make use of the `DT` package for interactive tables and the `widgetframe` package to allow me to embed them on this webpage.
+
+```{r message = FALSE}
+library(DT)
+library(widgetframe)
+```
+
 Next I build up a dataframe which holds the maximum theoretical enhancements possible for each stat (I planned to use this to do some normalisation later so I could compare like with like). So for example, the maximum Speed enhancement you can get from a primary stat on any one mod is +30, similarly for Offense % is +5.88%. However the `max_nprim` vector contains the maximum number of mods a toon can hold with that primary stat enhancement, so it's only one for Speed, but four for Offense %, which means an enhancement of `r 4*5.88`% is possible for primary stat enhancements alone. Whilst the maximum primary enhancements were quite easy to get, there is more randomness in the secondary stats, so I basically had to base the figures off the maximum values I had ever seen. The maximum set bonuses are always additional percentage increases.
 
 ```{r}
@@ -76,7 +83,7 @@ max_stats <- data.frame(Max.Primary = max_prim * max_nprim,
                         stringsAsFactors = FALSE)
 
 rm(max_prim, max_nprim, max_sec, max_nsec, max_set_bonus)
-max_stats
+frameWidget(datatable(max_stats))
 ```
 
 Next, I define how many mods are needed to obtain the set bonuses (the zeroes mean that there are no set bonuses for that stat). The lower (and upper) vector gives the % enhancement in that stat if you reach that number (and if all of the mods in that set are at maximum level)
@@ -93,7 +100,7 @@ set_bonus_rules <- data.frame(Number = set_bonus_n,
                               stringsAsFactors = FALSE)
 
 rm(set_bonus_n, set_bonus_lower, set_bonus_upper)
-set_bonus_rules
+frameWidget(datatable(set_bonus_rules))
 ```
 
 ## Reading in game data
@@ -124,7 +131,7 @@ mods_info <- data.frame(Mod.ID = mods_json$all_mods$mod_uid,
                         stringsAsFactors = FALSE)
 
 rm(mods_json)
-head(mods_info)
+frameWidget(datatable(mods_info))
 ```
 
 Since a typical user would have hundreds of mods, I filtered this list down to only contain the best; maximum pips, maximum level, and some speed enhancement ("speed is king"!). As I'll discuss later, problem size becomes a real issue!
@@ -246,7 +253,7 @@ toon_priority <- sample(0:20,
                         size=length(toon_list),
                         replace = TRUE)
 names(toon_priority) <- toon_list
-head(toon_priority)
+toon_priority
 
 toon_stat_priority <- matrix(sample(0:10,
                                     size = length(toon_list)*length(stat_names),
@@ -255,7 +262,7 @@ toon_stat_priority <- matrix(sample(0:10,
                              ncol = length(stat_names))
 rownames(toon_stat_priority) <- toon_list
 colnames(toon_stat_priority) <- stat_names
-head(toon_stat_priority)
+frameWidget(datatable(toon_stat_priority))
 ```
 
 ## Let the shenanigans begin!!
@@ -358,7 +365,7 @@ First I split up the mods list into a dataframe, with a column for each shape:
 mod_list_shape <- map(slots, function(x) {mods_info$Mod.ID[mods_info$Shape == x]}) %>%
   as.data.frame()
 names(mod_list_shape) <- slots
-head(mod_list_shape)
+frameWidget(datatable(mod_list_shape))
 ```
 
 I then define how many permutations of mod assignments I'm going to generate, and how many of the best ones I'm going to use to find the best overall solution:

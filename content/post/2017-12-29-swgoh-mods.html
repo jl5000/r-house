@@ -8,6 +8,9 @@ output:
 tags: [r, rstudio, star wars, swgoh, mods]
 ---
 
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
+<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
 
 <div id="TOC">
 <ul>
@@ -65,6 +68,9 @@ stat_names &lt;- c(&quot;Speed&quot;,
                 &quot;Defense %&quot;,
                 &quot;Health&quot;,
                 &quot;Health %&quot;)</code></pre>
+<p>For the purposes of this blog post I’m also going to make use of the <code>DT</code> package for interactive tables and the <code>widgetframe</code> package to allow me to embed them on this webpage.</p>
+<pre class="r"><code>library(DT)
+library(widgetframe)</code></pre>
 <p>Next I build up a dataframe which holds the maximum theoretical enhancements possible for each stat (I planned to use this to do some normalisation later so I could compare like with like). So for example, the maximum Speed enhancement you can get from a primary stat on any one mod is +30, similarly for Offense % is +5.88%. However the <code>max_nprim</code> vector contains the maximum number of mods a toon can hold with that primary stat enhancement, so it’s only one for Speed, but four for Offense %, which means an enhancement of 23.52% is possible for primary stat enhancements alone. Whilst the maximum primary enhancements were quite easy to get, there is more randomness in the secondary stats, so I basically had to base the figures off the maximum values I had ever seen. The maximum set bonuses are always additional percentage increases.</p>
 <pre class="r"><code>max_prim &lt;- c(30,0,24,24,0,5.88,0,23.5,12,36,0,11.75,0,5.88)
 max_nprim &lt;- c(1,0,1,1,0,4,0,4,1,1,0,4,0,4)
@@ -79,22 +85,9 @@ max_stats &lt;- data.frame(Max.Primary = max_prim * max_nprim,
                         stringsAsFactors = FALSE)
 
 rm(max_prim, max_nprim, max_sec, max_nsec, max_set_bonus)
-max_stats</code></pre>
-<pre><code>##                   Max.Primary Max.Secondary Max.Set.Bonus
-## Speed                   30.00        135.00             0
-## Speed %                  0.00          0.00            10
-## Potency %               24.00         57.78            30
-## Tenacity %              24.00         61.14            30
-## Offense                  0.00       1206.00             0
-## Offense %               23.52         14.64            10
-## Protection               0.00      21780.00             0
-## Protection %            94.00         58.44             0
-## Critical Chance %       12.00         60.84            15
-## Critical Damage %       36.00          0.00            30
-## Defense                  0.00        246.00             0
-## Defense %               47.00         43.62            15
-## Health                   0.00      11496.00             0
-## Health %                23.52         30.06            15</code></pre>
+frameWidget(datatable(max_stats))</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2017-12-29-swgoh-mods_files/figure-html//widgets/widget_unnamed-chunk-3.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 <p>Next, I define how many mods are needed to obtain the set bonuses (the zeroes mean that there are no set bonuses for that stat). The lower (and upper) vector gives the % enhancement in that stat if you reach that number (and if all of the mods in that set are at maximum level)</p>
 <pre class="r"><code>set_bonus_n &lt;- c(0,4,2,2,0,4,0,0,2,4,0,2,0,2)
 set_bonus_lower &lt;- c(0,5,5,5,0,5,0,0,2.5,15,0,2.5,0,2.5)
@@ -107,22 +100,11 @@ set_bonus_rules &lt;- data.frame(Number = set_bonus_n,
                               stringsAsFactors = FALSE)
 
 rm(set_bonus_n, set_bonus_lower, set_bonus_upper)
-set_bonus_rules</code></pre>
-<pre><code>##                   Number Bonus Max.Bonus
-## Speed                  0   0.0         0
-## Speed %                4   5.0        10
-## Potency %              2   5.0        10
-## Tenacity %             2   5.0        10
-## Offense                0   0.0         0
-## Offense %              4   5.0        10
-## Protection             0   0.0         0
-## Protection %           0   0.0         0
-## Critical Chance %      2   2.5         5
-## Critical Damage %      4  15.0        30
-## Defense                0   0.0         0
-## Defense %              2   2.5         5
-## Health                 0   0.0         0
-## Health %               2   2.5         5</code></pre>
+frameWidget(datatable(set_bonus_rules))</code></pre>
+<pre><code>## Warning in dir.create(target_dir): &#39;datatables_libs\crosstalk&#39; already
+## exists</code></pre>
+<div id="htmlwidget-2" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"url":"/post/2017-12-29-swgoh-mods_files/figure-html//widgets/widget_unnamed-chunk-4.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="reading-in-game-data" class="section level2">
 <h2>Reading in game data</h2>
@@ -150,35 +132,11 @@ mods_info &lt;- data.frame(Mod.ID = mods_json$all_mods$mod_uid,
                         stringsAsFactors = FALSE)
 
 rm(mods_json)
-head(mods_info)</code></pre>
-<pre><code>##                   Mod.ID      Initial.Toon    Shape        Set Level
-## 1 -2uujN4fSzq9Y5_Bo5B8ew       Poe Dameron   square      speed    15
-## 2 -BCBuYQJSVGcfsicCBbx2A Biggs Darklighter triangle critdamage    15
-## 3 -DSU8UhkTqyXQp1tuhSfWg     Darth Sidious triangle critdamage    12
-## 4 -FGSr-lSREyxoRboW8LK4A        unassigned    arrow     health    15
-## 5 -jpEqtA8Q9OQtm-z4gx0rQ        unassigned  diamond    potency    15
-## 6 -Lf6errXS0OCiVMEKaUg5w        unassigned    cross critdamage    15
-##           Primary Primary.Value      Secondary1 Secondary1.Value
-## 1         Offense        +5.88%           Speed               +6
-## 2         Defense       +11.75%        Health %             +1.1
-## 3 Critical Chance        +9.75%       Defense %            +0.87
-## 4         Offense        +1.88% Critical Chance            +1.6%
-## 5         Defense       +11.75%         Offense              +69
-## 6      Protection         +7.5%       Defense %            +0.78
-##     Secondary2 Secondary2.Value Secondary3 Secondary3.Value Secondary4
-## 1      Potency           +2.09%     Health             +347  Defense %
-## 2        Speed               +4    Defense               +5    Offense
-## 3        Speed               +5  Offense %            +0.54   Health %
-## 4 Protection %             +0.6   Tenacity           +0.65%    Defense
-## 5   Protection             +457    Potency           +1.25%      Speed
-## 6        Speed               +1  Offense %            +0.23    Potency
-##   Secondary4.Value Pips
-## 1             +1.4    5
-## 2              +38    5
-## 3            +0.99    5
-## 4               +2    1
-## 5               +3    5
-## 6           +0.59%    1</code></pre>
+frameWidget(datatable(mods_info))</code></pre>
+<pre><code>## Warning in dir.create(target_dir): &#39;datatables_libs\crosstalk&#39; already
+## exists</code></pre>
+<div id="htmlwidget-3" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3">{"x":{"url":"/post/2017-12-29-swgoh-mods_files/figure-html//widgets/widget_unnamed-chunk-5.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 <p>Since a typical user would have hundreds of mods, I filtered this list down to only contain the best; maximum pips, maximum level, and some speed enhancement (“speed is king”!). As I’ll discuss later, problem size becomes a real issue!</p>
 <pre class="r"><code>dim(mods_info)</code></pre>
 <pre><code>## [1] 547  16</code></pre>
@@ -280,11 +238,35 @@ toon_priority &lt;- sample(0:20,
                         size=length(toon_list),
                         replace = TRUE)
 names(toon_priority) &lt;- toon_list
-head(toon_priority)</code></pre>
-<pre><code>##       Ahsoka Tano Biggs Darklighter         Boba Fett       Chief Nebit 
-##                14                 9                 4                16 
-## CT-21-0408 &#39;Echo&#39;   CT-5555 &#39;Fives&#39; 
-##                10                 0</code></pre>
+toon_priority</code></pre>
+<pre><code>##           Ahsoka Tano     Biggs Darklighter             Boba Fett 
+##                    14                     9                     4 
+##           Chief Nebit     CT-21-0408 &#39;Echo&#39;       CT-5555 &#39;Fives&#39; 
+##                    16                    10                     0 
+##         CT-7567 &#39;Rex&#39;            Darth Maul         Darth Nihilus 
+##                    14                    13                     0 
+##               Dathcha     Emperor Palpatine                  Finn 
+##                     2                     8                     5 
+## First Order TIE Pilot        General Kenobi     Geonosian Soldier 
+##                    13                     1                     5 
+##     Grand Master Yoda     Grand Moff Tarkin                 HK-47 
+##                    14                    17                     7 
+##  IG-86 Sentinel Droid                 IG-88            Ima-Gun Di 
+##                     1                     3                    12 
+##         Jawa Engineer        Jawa Scavenger    Jedi Knight Anakin 
+##                     4                    14                    17 
+##              Jyn Erso              Kylo Ren      Lando Calrissian 
+##                     6                    13                    12 
+##        Luke Skywalker       Luminara Unduli            Mace Windu 
+##                     5                     6                     7 
+##           Poe Dameron          Qui-Gon Jinn                 R2-D2 
+##                     7                     8                     9 
+##      Resistance Pilot    Resistance Trooper                   Rey 
+##                    12                     4                    13 
+##           Royal Guard           Sabine Wren                 Teebo 
+##                     2                    14                     7 
+##     TIE Fighter Pilot        Wedge Antilles 
+##                     9                     7</code></pre>
 <pre class="r"><code>toon_stat_priority &lt;- matrix(sample(0:10,
                                     size = length(toon_list)*length(stat_names),
                                     replace = TRUE),
@@ -292,28 +274,12 @@ head(toon_priority)</code></pre>
                              ncol = length(stat_names))
 rownames(toon_stat_priority) &lt;- toon_list
 colnames(toon_stat_priority) &lt;- stat_names
-head(toon_stat_priority)</code></pre>
-<pre><code>##                   Speed Speed % Potency % Tenacity % Offense Offense %
-## Ahsoka Tano           9       3         6          7       2         1
-## Biggs Darklighter     3       5         5          5       7         8
-## Boba Fett             1       5         5          3       3         2
-## Chief Nebit           0       0         2          4       9         1
-## CT-21-0408 &#39;Echo&#39;     7       0         0          9       4         7
-## CT-5555 &#39;Fives&#39;      10       7         0          4       5         9
-##                   Protection Protection % Critical Chance %
-## Ahsoka Tano                3            9                 7
-## Biggs Darklighter          0           10                 3
-## Boba Fett                  5            2                 4
-## Chief Nebit                5            5                 8
-## CT-21-0408 &#39;Echo&#39;         10            1                 4
-## CT-5555 &#39;Fives&#39;           10            3                 8
-##                   Critical Damage % Defense Defense % Health Health %
-## Ahsoka Tano                       7       5         8      1        0
-## Biggs Darklighter                 3       9         0      4        8
-## Boba Fett                         9       7         6      5        0
-## Chief Nebit                       6       7         9     10        8
-## CT-21-0408 &#39;Echo&#39;                 2       9         8      1        7
-## CT-5555 &#39;Fives&#39;                   4       0         3      5       10</code></pre>
+frameWidget(datatable(toon_stat_priority))</code></pre>
+<pre><code>## Warning in dir.create(target_dir): &#39;datatables_libs\dt-core&#39; already exists</code></pre>
+<pre><code>## Warning in dir.create(target_dir): &#39;datatables_libs\crosstalk&#39; already
+## exists</code></pre>
+<div id="htmlwidget-4" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4">{"x":{"url":"/post/2017-12-29-swgoh-mods_files/figure-html//widgets/widget_unnamed-chunk-11.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="let-the-shenanigans-begin" class="section level2">
 <h2>Let the shenanigans begin!!</h2>
@@ -401,21 +367,18 @@ colnames(mod_assignment) &lt;- mod_list</code></pre>
 <pre class="r"><code>mod_list_shape &lt;- map(slots, function(x) {mods_info$Mod.ID[mods_info$Shape == x]}) %&gt;%
   as.data.frame()
 names(mod_list_shape) &lt;- slots
-head(mod_list_shape)</code></pre>
-<pre><code>##                   Square                Diamond                 Circle
-## 1 -2uujN4fSzq9Y5_Bo5B8ew -jpEqtA8Q9OQtm-z4gx0rQ 5GJk_0AyS2a-1WAiJiRITg
-## 2 a79U_UGvQmypgizQRx8Tzw 2n6fhh6gTbSLV4uxuvE0Lg 7MbqYLFpQVW7rxgPpoRFtw
-## 3 BFtZ9Ij6Qpe_5Kf6WDm96w 33hCaqVtSJCyuZU3lR76Ww 8xlsn3eVTEuVu18JvRfBuA
-## 4 bnwcjrsJQ0moWp-mvJlMrQ 3iIvjj-SSfy-E8sPm6eJpw 9bQzGF6cSYyeW0uZ8u7FCg
-## 5 C5NMzQauRNWHpa2-ni31NQ 7dJZO6JYSfOQ89IMuljSLg a5AwI1sIROSDYCRYrFn9ag
-## 6 cdUpBP2PQvyczmrEu9z-7Q 8x7VtTxRQrWhyWralRdlrg Ao8i6ES6QBqZiQKuIKwLtg
-##                    Arrow               Triangle                  Cross
-## 1 17zYpRcARLKlbRM5a-Tpkw -BCBuYQJSVGcfsicCBbx2A 26qCJ0PWR3CB8apb38l17g
-## 2 1v6HSnVHSCOigsIn3x18Gg 48_oOrwMS1iWVAE-KOmVEQ 3v1_O4lbTAGINd3gsQ1O0w
-## 3 AdHQrio1Ry-CjE4I3lab8A 6dA0oUFiSrOGomcaZxQUDA 5o7UuQ6vSmqKSP4qUlvBsQ
-## 4 AlWHuiYGSReCuJERg7U1iw ACAy-17-TDqjtzqIWcns9g 6Xx4rsvoTxGBVeoCoECJSQ
-## 5 aQsY--AqTd2kNTNCxPMSNQ ajhVqNkhR_SJgygX-R2SGg 74cDghpDSCmCyyLLj8Q_Aw
-## 6 COV7jFELQFaN67a0eFhsdw G1RTvQBOTJeMadRUMh43FQ AH7-UZQ6Roa0u6__RxghNg</code></pre>
+frameWidget(datatable(mod_list_shape))</code></pre>
+<pre><code>## Warning in dir.create(target_dir): &#39;datatables_libs\dt-core&#39; already exists</code></pre>
+<pre><code>## Warning in file.create(to[okay]): cannot create file &#39;datatables_libs/dt-
+## core/js/jquery.dataTables.min.js&#39;, reason &#39;Permission denied&#39;</code></pre>
+<pre><code>## Warning in file.create(to[okay]): cannot create file &#39;datatables_libs/dt-
+## core/css/jquery.dataTables.min.css&#39;, reason &#39;Permission denied&#39;</code></pre>
+<pre><code>## Warning in file.create(to[okay]): cannot create file &#39;datatables_libs/dt-
+## core/css/jquery.dataTables.extra.css&#39;, reason &#39;Permission denied&#39;</code></pre>
+<pre><code>## Warning in dir.create(target_dir): &#39;datatables_libs\crosstalk&#39; already
+## exists</code></pre>
+<div id="htmlwidget-5" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5">{"x":{"url":"/post/2017-12-29-swgoh-mods_files/figure-html//widgets/widget_unnamed-chunk-15.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 <p>I then define how many permutations of mod assignments I’m going to generate, and how many of the best ones I’m going to use to find the best overall solution:</p>
 <pre class="r"><code>permutations &lt;- length(toon_list)*length(mod_list)
 top_permutations &lt;- permutations %/% 10</code></pre>
