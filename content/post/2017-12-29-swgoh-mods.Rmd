@@ -246,7 +246,7 @@ toon_priority <- sample(0:20,
                         size=length(toon_list),
                         replace = TRUE)
 names(toon_priority) <- toon_list
-head(toon_priority)
+toon_priority
 
 toon_stat_priority <- matrix(sample(0:10,
                                     size = length(toon_list)*length(stat_names),

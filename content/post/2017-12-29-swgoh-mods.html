@@ -280,11 +280,35 @@ toon_priority &lt;- sample(0:20,
                         size=length(toon_list),
                         replace = TRUE)
 names(toon_priority) &lt;- toon_list
-head(toon_priority)</code></pre>
-<pre><code>##       Ahsoka Tano Biggs Darklighter         Boba Fett       Chief Nebit 
-##                14                 9                 4                16 
-## CT-21-0408 &#39;Echo&#39;   CT-5555 &#39;Fives&#39; 
-##                10                 0</code></pre>
+toon_priority</code></pre>
+<pre><code>##           Ahsoka Tano     Biggs Darklighter             Boba Fett 
+##                    14                     9                     4 
+##           Chief Nebit     CT-21-0408 &#39;Echo&#39;       CT-5555 &#39;Fives&#39; 
+##                    16                    10                     0 
+##         CT-7567 &#39;Rex&#39;            Darth Maul         Darth Nihilus 
+##                    14                    13                     0 
+##               Dathcha     Emperor Palpatine                  Finn 
+##                     2                     8                     5 
+## First Order TIE Pilot        General Kenobi     Geonosian Soldier 
+##                    13                     1                     5 
+##     Grand Master Yoda     Grand Moff Tarkin                 HK-47 
+##                    14                    17                     7 
+##  IG-86 Sentinel Droid                 IG-88            Ima-Gun Di 
+##                     1                     3                    12 
+##         Jawa Engineer        Jawa Scavenger    Jedi Knight Anakin 
+##                     4                    14                    17 
+##              Jyn Erso              Kylo Ren      Lando Calrissian 
+##                     6                    13                    12 
+##        Luke Skywalker       Luminara Unduli            Mace Windu 
+##                     5                     6                     7 
+##           Poe Dameron          Qui-Gon Jinn                 R2-D2 
+##                     7                     8                     9 
+##      Resistance Pilot    Resistance Trooper                   Rey 
+##                    12                     4                    13 
+##           Royal Guard           Sabine Wren                 Teebo 
+##                     2                    14                     7 
+##     TIE Fighter Pilot        Wedge Antilles 
+##                     9                     7</code></pre>
 <pre class="r"><code>toon_stat_priority &lt;- matrix(sample(0:10,
                                     size = length(toon_list)*length(stat_names),
                                     replace = TRUE),
