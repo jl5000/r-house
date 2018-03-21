@@ -130,4 +130,4 @@ master %>%
       unnest()
 ```
 
-The `crossing()` function was a new one on me. The moral of the story? Don't try to create something in its final form straight off the bat!
+The `crossing()` function was a new one on me. The moral of the story? Don't necessarily try to create something in its final form straight off the bat!

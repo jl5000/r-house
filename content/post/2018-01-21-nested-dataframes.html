@@ -25,38 +25,38 @@ terminator_critic_ratings &lt;- data_frame(critic = c(&quot;Reviewer3&quot;, &qu
 
 pulp_fiction_cast</code></pre>
 <pre><code>## # A tibble: 2 x 2
-##     cast_member         role
-##           &lt;chr&gt;        &lt;chr&gt;
-## 1   Uma Thurman  Mia Wallace
+##   cast_member   role        
+##   &lt;chr&gt;         &lt;chr&gt;       
+## 1 Uma Thurman   Mia Wallace 
 ## 2 John Travolta Vincent Vega</code></pre>
 <pre class="r"><code>terminator_cast</code></pre>
 <pre><code>## # A tibble: 2 x 2
-##             cast_member         role
-##                   &lt;chr&gt;        &lt;chr&gt;
-## 1 Arnold Schwarzenegger        T-101
-## 2        Linda Hamilton Sarah Connor</code></pre>
+##   cast_member           role        
+##   &lt;chr&gt;                 &lt;chr&gt;       
+## 1 Arnold Schwarzenegger T-101       
+## 2 Linda Hamilton        Sarah Connor</code></pre>
 <pre class="r"><code>pulp_fiction_critic_ratings</code></pre>
 <pre><code>## # A tibble: 2 x 2
-##      critic score
-##       &lt;chr&gt; &lt;dbl&gt;
-## 1 Reviewer1   8.1
-## 2 Reviewer2   9.0</code></pre>
+##   critic    score
+##   &lt;chr&gt;     &lt;dbl&gt;
+## 1 Reviewer1  8.10
+## 2 Reviewer2  9.00</code></pre>
 <pre class="r"><code>terminator_critic_ratings</code></pre>
 <pre><code>## # A tibble: 2 x 2
-##      critic score
-##       &lt;chr&gt; &lt;dbl&gt;
-## 1 Reviewer3   7.8
-## 2 Reviewer4   8.5</code></pre>
+##   critic    score
+##   &lt;chr&gt;     &lt;dbl&gt;
+## 1 Reviewer3  7.80
+## 2 Reviewer4  8.50</code></pre>
 <p>Whereas above I’ve defined each dataframe explicitly, in reality I had a function which could return the dataframe I wanted from a database given the film name and table name.</p>
 <p>This was the type of setup I settled for; defining each dataframe separately and performing my analysis pipelines manually on each. Of particular note is that the number of movies and table types would increase as more information was loaded into the database. This was very laborious. What I really wanted was a way of storing all of this information in a single dataframe, by nesting the above dataframes within it. I could then store my analysis pipelines in functions which I could then loop over with the <code>map()</code> functions. So the single dataframe would look like the following:</p>
 <pre class="r"><code>(master &lt;- data_frame(movie_name = c(&quot;Pulp Fiction&quot;, &quot;Terminator&quot;),
                      cast = c(&quot;pulp_fiction_cast df&quot;, &quot;terminator_cast df&quot;),
                      critic_ratings = c(&quot;pulp_fiction_critic_ratings df&quot;, &quot;terminator_critic_ratings df&quot;)))</code></pre>
 <pre><code>## # A tibble: 2 x 3
-##     movie_name                 cast                 critic_ratings
-##          &lt;chr&gt;                &lt;chr&gt;                          &lt;chr&gt;
+##   movie_name   cast                 critic_ratings                
+##   &lt;chr&gt;        &lt;chr&gt;                &lt;chr&gt;                         
 ## 1 Pulp Fiction pulp_fiction_cast df pulp_fiction_critic_ratings df
-## 2   Terminator   terminator_cast df   terminator_critic_ratings df</code></pre>
+## 2 Terminator   terminator_cast df   terminator_critic_ratings df</code></pre>
 <p>In order to demonstrate the problem, I’ve defined a very rudimentary import function below to return a particular dataframe:</p>
 <pre class="r"><code>movie_names &lt;- c(&quot;Pulp Fiction&quot;, &quot;Terminator&quot;)
 table_names &lt;- c(&quot;Cast&quot;, &quot;Critic Ratings&quot;) 
@@ -79,10 +79,10 @@ import_fn &lt;- function(movie_name, table_name){
 
 import_fn(movie_names[2], table_names[2])</code></pre>
 <pre><code>## # A tibble: 2 x 2
-##      critic score
-##       &lt;chr&gt; &lt;dbl&gt;
-## 1 Reviewer3   7.8
-## 2 Reviewer4   8.5</code></pre>
+##   critic    score
+##   &lt;chr&gt;     &lt;dbl&gt;
+## 1 Reviewer3  7.80
+## 2 Reviewer4  8.50</code></pre>
 <p>My first attempt to create the dataframe I wanted looked like this:</p>
 <pre class="r"><code>master &lt;- map(movie_names, function(x){map(table_names, import_fn, movie_name = x)})
 str(master)</code></pre>
@@ -146,24 +146,24 @@ master &lt;- reduce(table_names, bind_table_cols) %&gt;%
                     spread(table_names, df)
 master</code></pre>
 <pre><code>## # A tibble: 2 x 3
-##    movie_names             Cast `Critic Ratings`
-## *        &lt;chr&gt;           &lt;list&gt;           &lt;list&gt;
+##   movie_names  Cast             `Critic Ratings`
+##   &lt;chr&gt;        &lt;list&gt;           &lt;list&gt;          
 ## 1 Pulp Fiction &lt;tibble [2 x 2]&gt; &lt;tibble [2 x 2]&gt;
-## 2   Terminator &lt;tibble [2 x 2]&gt; &lt;tibble [2 x 2]&gt;</code></pre>
+## 2 Terminator   &lt;tibble [2 x 2]&gt; &lt;tibble [2 x 2]&gt;</code></pre>
 <pre class="r"><code>master$Cast[[2]]</code></pre>
 <pre><code>## # A tibble: 2 x 2
-##             cast_member         role
-##                   &lt;chr&gt;        &lt;chr&gt;
-## 1 Arnold Schwarzenegger        T-101
-## 2        Linda Hamilton Sarah Connor</code></pre>
+##   cast_member           role        
+##   &lt;chr&gt;                 &lt;chr&gt;       
+## 1 Arnold Schwarzenegger T-101       
+## 2 Linda Hamilton        Sarah Connor</code></pre>
 <pre class="r"><code>master %&gt;%
       filter(movie_names == &quot;Terminator&quot;) %&gt;%
       select(Cast) %&gt;%
       unnest()</code></pre>
 <pre><code>## # A tibble: 2 x 2
-##             cast_member         role
-##                   &lt;chr&gt;        &lt;chr&gt;
-## 1 Arnold Schwarzenegger        T-101
-## 2        Linda Hamilton Sarah Connor</code></pre>
-<p>The <code>crossing()</code> function was a new one on me. The moral of the story? Don’t try to create something in its final form straight off the bat!</p>
+##   cast_member           role        
+##   &lt;chr&gt;                 &lt;chr&gt;       
+## 1 Arnold Schwarzenegger T-101       
+## 2 Linda Hamilton        Sarah Connor</code></pre>
+<p>The <code>crossing()</code> function was a new one on me. The moral of the story? Don’t necessarily try to create something in its final form straight off the bat!</p>
 </div>
