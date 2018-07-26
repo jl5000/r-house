@@ -2,7 +2,7 @@
 title: "Two years in Data Science and not yet a Data Scientist"
 date: "2018-07-26"
 author: "Jamie Lendrum"
-tags: [data science, training, datacamp, tidyverse]
+tags: [r, data science, training, datacamp, tidyverse]
 ---
 
 # What's in a name?
