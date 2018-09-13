@@ -1,0 +1,192 @@
+---
+title: "Mapping homelessness in England"
+date: "2018-09-13"
+author: "Jamie Lendrum"
+tags: [r, data science, tidyverse]
+---
+
+## Introduction
+For this blog post, I decided to try to find a dataset covering an issue I feel quite strongly about - homelessness. I managed to find a fairly large dataset from the [Cambridgeshire Insight](http://opendata.cambridgeshireinsight.org.uk/dataset/homelessness-england) website.
+
+For a while I've wanted to try out R's mapping potential and hopefully generate a heatmap, so I've deliberately tried to find a dataset where I can try this out. It's worth saying that this activity has been the most difficult and frustrating project I've taken on by far. It's taken me 6 or 7 sessions to produce this blog, in which the first was me trying to install `gganimate` (which I ended up not using) and figuring out where to start with mapping. 
+
+## Data wrangling
+Let's load the required packages and read the data in:
+
+```{r}
+library(tidyverse)
+library(gifski)
+library(sf)
+
+data <- read_csv("http://opendata.cambridgeshireinsight.org.uk/files/ci_opendata/P1E-%20national-%20homelessness-CLG-tab784-to2016_1.csv")
+names(data)
+```
+
+The first thing to do is to try to hone in on some data I'd like to use. A quick scan of the columns and the "Local authority area" looks critical, and I'd like to see if I have yearly data for "Numbers accepted as homeless and in priority need total":
+
+```{r}
+ind <- str_detect(names(data), "priority need total")
+names(data)[ind]
+```
+
+This looks to fit the bill. Now I've honed in on the columns I need, let's have a look at the structure and distribution of the data:
+
+```{r}
+data_trim <- data %>% select(2, names(data)[ind])
+
+str(data_trim, give.attr = FALSE)
+summary(data_trim)
+
+```
+
+I can see that apart from the annoyingly long column names, I seem to have the totals for the whole of England in the first row. So let's fix these issues:
+
+```{r}
+data_trim <- data_trim %>%
+                 slice(-1) %>%
+                 set_names("LAA", 2009:2015)
+
+head(data_trim, 20)
+```
+
+That's looking a bit better. I notice that there seems to be a stray "UA" at the end of some LAAs.  From the output of the `summary()` function above, I can also see that the 2015/16 column seems to have been parsed as a character, so there's probably some non-numeric character in there. Let's see how many places these issues affect:
+
+```{r}
+data_trim %>% filter(str_detect(LAA, " UA")) %>% select(LAA)
+data_trim %>% filter(str_detect(`2015`, "[^0-9]+")) %>% select(LAA, `2015`)
+```
+
+56 place names ending in "UA" and five places without data in 2015! Let's update our trimmed data to fix these issues, and make the data tidy by gathering the year headers into their own column:
+
+```{r}
+data_tidy <- data_trim %>%
+                mutate(LAA = str_replace(LAA, " UA", "")) %>%
+                mutate(`2015` = str_replace(`2015`, "-", NA_character_) %>% as.integer()) %>%
+                gather(year, num_homeless, -LAA) %>%
+                mutate(year = as.integer(year))
+
+str(data_tidy)
+
+```
+
+## Initial analysis
+Now I have the data in a more manageable format, let's quickly plot the top 6 homelessness figures in each year:
+
+```{r}
+data_tidy %>%
+  group_by(year) %>%
+  arrange(year, desc(num_homeless)) %>% 
+  top_n(6) %>%
+  ggplot(aes(x = LAA, y = num_homeless)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    facet_wrap(~ year, ncol=2, scales="free_y")
+  
+```
+
+We can see that Birmingham is by far the worst offender. I'm not sure of the accuracy of these figures, but if true that is truly horrifying and it hadn't seemed to have got any better up to 2015. Which areas have seen the most drastic improvement/deterioration over the 7 years?:
+
+```{r}
+extremes <- data_tidy %>%
+                  drop_na() %>%
+                  filter(year %in% c(2009, 2015)) %>%
+                  group_by(LAA) %>%
+                  mutate(homeless2009 = lag(num_homeless),
+                         change = num_homeless - homeless2009) %>% 
+                  ungroup() %>%
+                  drop_na() %>%
+                  arrange(change)
+
+bind_rows(head(extremes, 8), tail(extremes, 8))
+
+```
+
+Sheffield was the most improved with a reduction of over 500, with Newham seeing a massive increase of over 1200.
+
+## The painful part
+So having never done any geospatial analysis or mapping before, I tried doing some Google searches to see if I could find any code I could use. I quickly discovered that if I was going to do any mapping of UK regions, I was going to need to access some shape files.
+
+I managed to download some from the [UK Data Service website](https://borders.ukdataservice.ac.uk/bds.html). I also had enormous trouble getting the function to read the data from within this blog post, but I managed to make it work using the `here` package, which I've since heard good things about on Twitter.
+
+```{r}
+shapes <- st_read(dsn = paste(here::here(),"./data/homelessness/BoundaryData", sep="/"), layer = "infuse_dist_lyr_2011") %>% arrange(name)
+
+str(shapes)
+
+```
+
+With the intent of joining my dataframes together, I identified an inconsistency in the areas given in each table (`diff()` is a very handy function!):
+
+```{r}
+n_distinct(data_tidy$LAA)
+n_distinct(shapes$name)
+
+data_diff <- setdiff(data_tidy$LAA, shapes$name)
+shapes_diff <- setdiff(shapes$name, data_tidy$LAA)
+
+data_frame(data = data_diff,
+           shapes = c(shapes_diff,"",""))
+```
+
+You can see from the output above that my homelessness data has split out Westminster from the City of London, and the Isles of Scilly from Cornwall. There are also some grammatical inconsistencies that need to be sorted out. Let's clean it up, by combining rows
+
+```{r}
+data_final <- data_tidy %>%
+              #mutate_at(vars("year", "num_homeless"), as.numeric) %>% 
+              mutate(LAA = ifelse(LAA %in% c("City of London","Westminster"),
+                                   "City of London,Westminster",
+                                   LAA)) %>%
+              mutate(LAA = ifelse(LAA %in% c("Cornwall","Isles of Scilly"),
+                                   "Cornwall,Isles of Scilly",
+                                   LAA)) %>%
+              mutate(LAA = ifelse(LAA == "Bristol City of","Bristol, City of",LAA)) %>% 
+              mutate(LAA = ifelse(LAA == "Durham","County Durham",LAA)) %>%
+              mutate(LAA = ifelse(LAA == "Herefordshire County of","Herefordshire, County of",LAA)) %>%
+              mutate(LAA = ifelse(LAA == "Kingston upon Hull City of","Kingston upon Hull, City of",LAA)) %>%
+              mutate(LAA = ifelse(LAA == "St Helens","St. Helens",LAA)) %>%
+              mutate(LAA = ifelse(LAA == "St. Albans","St Albans",LAA)) %>%
+              mutate(LAA = ifelse(LAA == "St. Edmundsbury","St Edmundsbury",LAA)) %>%
+              mutate(LAA = as.factor(LAA)) %>%
+              group_by(LAA, year) %>% 
+              summarise(total_homeless = sum(num_homeless)) %>%
+              ungroup()
+
+```
+
+Next, I created a function to take a year and a set of regions and generate a heatmap. This function filters the homelessness data, joins it with the shape data, and then plots the data. I've included `regions` as an argument so that Birmingham can be filtered out, as it dominates the heatmap.
+
+
+```{r, eval=FALSE}
+heatmap <- function(inp_year, regions) {
+  
+data_joined <- data_final %>%
+                  filter(year==inp_year) %>%
+                  filter(LAA %in% regions) %>%
+                  right_join(shapes, by = c("LAA"="name"))
+
+max_scale <- max(data_final %>%
+                  filter(LAA %in% regions) %>%
+                  select(total_homeless), na.rm=TRUE)
+
+  p <- ggplot() +
+  geom_sf(data=data_joined, aes(fill=total_homeless), col="black") +
+    theme_void() + coord_sf(datum=NA) + 
+    scale_fill_viridis_c(name = NULL, option = "magma",
+                         limits = c(0, max_scale),
+                         breaks = c(0, max_scale/2, max_scale)) +
+    labs(title = paste0("Total number of people accepted as homeless and in priority need in England in ",inp_year),
+       caption = "Data obtained from  http://opendata.cambridgeshireinsight.org.uk/dataset/homelessness-england")
+  print(p)
+}
+
+regions_to_include <- unique(setdiff(data_final$LAA, "Birmingham"))
+
+save_gif(walk(min(data_final$year):max(data_final$year), heatmap, regions = regions_to_include), 
+         delay = 0.7, gif_file = "animation.gif")
+```
+
+![Homelessness heatmap](/img/homelessness.gif)
+
+I certainly feel this project has been a bit of a hack job. It's taken me over a month to write because it's been so challenging and I've had to leave and come back to it so many times. I'm not proud of it, mainly because I rushed it at the end because I just wanted it done.
+
+I've since used Tableau, and that seems a bit easier to do heatmaps. If I were to do it again in R however, I think I'll be taking the courses on DataCamp first!
