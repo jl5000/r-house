@@ -1,0 +1,514 @@
+---
+title: "Mapping homelessness in England"
+date: "2018-09-13"
+author: "Jamie Lendrum"
+output:
+  blogdown::html_page:
+    toc: true
+tags: [r, data science, tidyverse]
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#data-wrangling">Data wrangling</a></li>
+<li><a href="#initial-analysis">Initial analysis</a></li>
+<li><a href="#the-painful-part">The painful part</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>For this blog post, I decided to try to find a dataset covering an issue I feel quite strongly about - homelessness. I managed to find a fairly large dataset from the <a href="http://opendata.cambridgeshireinsight.org.uk/dataset/homelessness-england">Cambridgeshire Insight</a> website.</p>
+<p>For a while I’ve wanted to try out R’s mapping potential and hopefully generate a heatmap, so I’ve deliberately tried to find a dataset where I can try this out. It’s worth saying that this activity has been the most difficult and frustrating project I’ve taken on by far. It’s taken me 6 or 7 sessions to produce this blog, in which the first was me trying to install <code>gganimate</code> (which I ended up not using) and figuring out where to start with mapping.</p>
+</div>
+<div id="data-wrangling" class="section level2">
+<h2>Data wrangling</h2>
+<p>Let’s load the required packages and read the data in:</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ---------------------------------------------------------------------- tidyverse 1.2.1 --</code></pre>
+<pre><code>## v ggplot2 3.0.0     v purrr   0.2.5
+## v tibble  1.4.2     v dplyr   0.7.6
+## v tidyr   0.8.1     v stringr 1.3.1
+## v readr   1.1.1     v forcats 0.3.0</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(gifski)
+library(sf)</code></pre>
+<pre><code>## Linking to GEOS 3.6.1, GDAL 2.2.3, proj.4 4.9.3</code></pre>
+<pre class="r"><code>data &lt;- read_csv(&quot;http://opendata.cambridgeshireinsight.org.uk/files/ci_opendata/P1E-%20national-%20homelessness-CLG-tab784-to2016_1.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_integer(),
+##   `ONS code` = col_character(),
+##   `Local authority area` = col_character(),
+##   `2009/10 Numbers accepted as homeless and in priority need who are White` = col_character(),
+##   `2009/10 Numbers accepted as homeless and in priority need who are Black or Black British` = col_character(),
+##   `2009/10 Numbers accepted as homeless and in priority need who are Asian or Asian British` = col_character(),
+##   `2009/10 Numbers accepted as homeless and in priority need who are Mixed` = col_character(),
+##   `2009/10 Numbers accepted as homeless and in priority need who are Other ethnic origin` = col_character(),
+##   `2009/10 Numbers accepted as homeless and in priority need who are Ethnic Group not Stated` = col_character(),
+##   `2009/10 Number per 1000 households` = col_double(),
+##   `2009/10 Total decisions where eligible homeless &amp; in priority need but intentionally` = col_character(),
+##   `2009/10 Total decisions where eligible &amp; homeless but not in priority need` = col_character(),
+##   `2009/10 Total decisions where eligible but not homeless` = col_character(),
+##   `2009/10 Total homelessness decisions` = col_character(),
+##   `31 March 2010 Total households in B&amp;B (including shared annex)` = col_character(),
+##   `31 March 2010 Total households in hostels` = col_character(),
+##   `31 March 2010 Total households in LA/HA stock` = col_character(),
+##   `31 March 2010 Total households in private sector leased (by LA or HA)` = col_character(),
+##   `31 March 2010 Total households in other temp (including private landlord)` = col_character(),
+##   `31 March 2010 Number per 1000 households` = col_double(),
+##   `2010/11 Number per 1000 households` = col_double()
+##   # ... with 30 more columns
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>names(data)</code></pre>
+<pre><code>##   [1] &quot;ONS code&quot;                                                                                 
+##   [2] &quot;Local authority area&quot;                                                                     
+##   [3] &quot;2009/10 Thousands of households 2006 mid-year estimate&quot;                                   
+##   [4] &quot;2009/10 Numbers accepted as homeless and in priority need who are White&quot;                  
+##   [5] &quot;2009/10 Numbers accepted as homeless and in priority need who are Black or Black British&quot; 
+##   [6] &quot;2009/10 Numbers accepted as homeless and in priority need who are Asian or Asian British&quot; 
+##   [7] &quot;2009/10 Numbers accepted as homeless and in priority need who are Mixed&quot;                  
+##   [8] &quot;2009/10 Numbers accepted as homeless and in priority need who are Other ethnic origin&quot;    
+##   [9] &quot;2009/10 Numbers accepted as homeless and in priority need who are Ethnic Group not Stated&quot;
+##  [10] &quot;2009/10 Numbers accepted as homeless and in priority need total&quot;                          
+##  [11] &quot;2009/10 Number per 1000 households&quot;                                                       
+##  [12] &quot;2009/10 Total decisions where eligible homeless &amp; in priority need but intentionally&quot;     
+##  [13] &quot;2009/10 Total decisions where eligible &amp; homeless but not in priority need&quot;               
+##  [14] &quot;2009/10 Total decisions where eligible but not homeless&quot;                                  
+##  [15] &quot;2009/10 Total homelessness decisions&quot;                                                     
+##  [16] &quot;31 March 2010 Total households in B&amp;B (including shared annex)&quot;                           
+##  [17] &quot;31 March 2010 Total households in hostels&quot;                                                
+##  [18] &quot;31 March 2010 Total households in LA/HA stock&quot;                                            
+##  [19] &quot;31 March 2010 Total households in private sector leased (by LA or HA)&quot;                    
+##  [20] &quot;31 March 2010 Total households in other temp (including private landlord)&quot;                
+##  [21] &quot;31 March 2010 Total households in temporary accommodation&quot;                                
+##  [22] &quot;31 March 2010 Number per 1000 households&quot;                                                 
+##  [23] &quot;2009/10 Duty owed but no accommodation has been secured at end of March 2010&quot;             
+##  [24] &quot;2010/11 Thousands of households 2008 mid-year estimate&quot;                                   
+##  [25] &quot;2010/11 Numbers accepted as homeless and in priority need who are White&quot;                  
+##  [26] &quot;2010/11 Numbers accepted as homeless and in priority need who are Black or Black British&quot; 
+##  [27] &quot;2010/11 Numbers accepted as homeless and in priority need who are Asian or Asian British&quot; 
+##  [28] &quot;2010/11 Numbers accepted as homeless and in priority need who are Mixed&quot;                  
+##  [29] &quot;2010/11 Numbers accepted as homeless and in priority need who are Other ethnic origin&quot;    
+##  [30] &quot;2010/11 Numbers accepted as homeless and in priority need who are Ethnic Group not Stated&quot;
+##  [31] &quot;2010/11 Numbers accepted as homeless and in priority need total&quot;                          
+##  [32] &quot;2010/11 Number per 1000 households&quot;                                                       
+##  [33] &quot;2010/11 Total decisions where eligible homeless &amp; in priority need but intentionally&quot;     
+##  [34] &quot;2010/11 Total decisions where eligible &amp; homeless but not in priority need&quot;               
+##  [35] &quot;2010/11 Total decisions where eligible but not homeless&quot;                                  
+##  [36] &quot;2010/11 Total homelessness decisions&quot;                                                     
+##  [37] &quot;31 March 2011 Total households in B&amp;B (including shared annex)&quot;                           
+##  [38] &quot;31 March 2011 Total households in hostels&quot;                                                
+##  [39] &quot;31 March 2011 Total households in LA/HA stock&quot;                                            
+##  [40] &quot;31 March 2011 Total households in private sector leased (by LA or HA)&quot;                    
+##  [41] &quot;31 March 2011 Total households in other temp (including private landlord)&quot;                
+##  [42] &quot;31 March 2011 Total households in temporary accommodation&quot;                                
+##  [43] &quot;31 March 2011 Number per 1000 households&quot;                                                 
+##  [44] &quot;2010/11 Duty owed but no accommodation has been secured at end of March 2011&quot;             
+##  [45] &quot;2011/12 Thousands of households 2008 mid-year estimate&quot;                                   
+##  [46] &quot;2011/12 Numbers accepted as homeless and in priority need who are White&quot;                  
+##  [47] &quot;2011/12 Numbers accepted as homeless and in priority need who are Black or Black British&quot; 
+##  [48] &quot;2011/12 Numbers accepted as homeless and in priority need who are Asian or Asian British&quot; 
+##  [49] &quot;2011/12 Numbers accepted as homeless and in priority need who are Mixed&quot;                  
+##  [50] &quot;2011/12 Numbers accepted as homeless and in priority need who are Other ethnic origin&quot;    
+##  [51] &quot;2011/12 Numbers accepted as homeless and in priority need who are Ethnic Group not Stated&quot;
+##  [52] &quot;2011/12 Numbers accepted as homeless and in priority need total&quot;                          
+##  [53] &quot;2011/12 Number per 1000 households&quot;                                                       
+##  [54] &quot;2011/12 Total decisions where eligible homeless &amp; in priority need but intentionally&quot;     
+##  [55] &quot;2011/12 Total decisions where eligible &amp; homeless but not in priority need&quot;               
+##  [56] &quot;2011/12 Total decisions where eligible but not homeless&quot;                                  
+##  [57] &quot;2011/12 Total homelessness decisions&quot;                                                     
+##  [58] &quot;31 March 2012 Total households in B&amp;B (including shared annex)&quot;                           
+##  [59] &quot;31 March 2012 Total households in hostels&quot;                                                
+##  [60] &quot;31 March 2012 Total households in LA/HA stock&quot;                                            
+##  [61] &quot;31 March 2012 Total households in private sector leased (by LA or HA)&quot;                    
+##  [62] &quot;31 March 2012 Total households in other temp (including private landlord)&quot;                
+##  [63] &quot;31 March 2012 Total households in temporary accommodation&quot;                                
+##  [64] &quot;31 March 2012 Number per 1000 households&quot;                                                 
+##  [65] &quot;2011/12 Duty owed but no accommodation has been secured at end of March 2012&quot;             
+##  [66] &quot;2012/13 Thousands of households 2008-based interim projections for 2012&quot;                  
+##  [67] &quot;2012/13 Numbers accepted as homeless and in priority need who are White&quot;                  
+##  [68] &quot;2012/13 Numbers accepted as homeless and in priority need who are Black or Black British&quot; 
+##  [69] &quot;2012/13 Numbers accepted as homeless and in priority need who are Asian or Asian British&quot; 
+##  [70] &quot;2012/13 Numbers accepted as homeless and in priority need who are Mixed&quot;                  
+##  [71] &quot;2012/13 Numbers accepted as homeless and in priority need who are Other ethnic origin&quot;    
+##  [72] &quot;2012/13 Numbers accepted as homeless and in priority need who are Ethnic Group not Stated&quot;
+##  [73] &quot;2012/13 Numbers accepted as homeless and in priority need total&quot;                          
+##  [74] &quot;2012/13 Number per 1000 households&quot;                                                       
+##  [75] &quot;2012/13 Total decisions where eligible homeless &amp; in priority need but intentionally&quot;     
+##  [76] &quot;2012/13 Total decisions where eligible &amp; homeless but not in priority need&quot;               
+##  [77] &quot;2012/13 Total decisions where eligible but not homeless&quot;                                  
+##  [78] &quot;2012/13 Total homelessness decisions&quot;                                                     
+##  [79] &quot;31 March 2013 Total households in B&amp;B (including shared annex)&quot;                           
+##  [80] &quot;31 March 2013 Total households in hostels&quot;                                                
+##  [81] &quot;31 March 2013 Total households in LA/HA stock&quot;                                            
+##  [82] &quot;31 March 2013 Total households in private sector leased (by LA or HA)&quot;                    
+##  [83] &quot;31 March 2013 Total households in other temp (including private landlord)&quot;                
+##  [84] &quot;31 March 2013 Total households in temporary accommodation&quot;                                
+##  [85] &quot;31 March 2013 Number per 1000 households&quot;                                                 
+##  [86] &quot;2012/13 Duty owed but no accommodation has been secured at end of March 2013&quot;             
+##  [87] &quot;2013/14 Thousands of households 2012-based interim projections for 2013&quot;                  
+##  [88] &quot;2013/14 Numbers accepted as homeless and in priority need who are White&quot;                  
+##  [89] &quot;2013/14 Numbers accepted as homeless and in priority need who are Black or Black British&quot; 
+##  [90] &quot;2013/14 Numbers accepted as homeless and in priority need who are Asian or Asian British&quot; 
+##  [91] &quot;2013/14 Numbers accepted as homeless and in priority need who are Mixed&quot;                  
+##  [92] &quot;2013/14 Numbers accepted as homeless and in priority need who are Other ethnic origin&quot;    
+##  [93] &quot;2013/14 Numbers accepted as homeless and in priority need who are Ethnic Group not Stated&quot;
+##  [94] &quot;2013/14 Numbers accepted as homeless and in priority need total&quot;                          
+##  [95] &quot;2013/14 Number per 1000 households&quot;                                                       
+##  [96] &quot;2013/14 Total decisions where eligible homeless &amp; in priority need but intentionally&quot;     
+##  [97] &quot;2013/14 Total decisions where eligible &amp; homeless but not in priority need&quot;               
+##  [98] &quot;2013/14 Total decisions where eligible but not homeless&quot;                                  
+##  [99] &quot;2013/14 Total homelessness decisions&quot;                                                     
+## [100] &quot;31 March 2014 Total households in B&amp;B (including shared annex)&quot;                           
+## [101] &quot;31 March 2014 Total households in hostels&quot;                                                
+## [102] &quot;31 March 2014 Total households in LA/HA stock&quot;                                            
+## [103] &quot;31 March 2014 Total households in private sector leased (by LA or HA)&quot;                    
+## [104] &quot;31 March 2014 Total households in other temp (including private landlord)&quot;                
+## [105] &quot;31 March 2014 Total households in temporary accommodation&quot;                                
+## [106] &quot;31 March 2014 Number per 1000 households&quot;                                                 
+## [107] &quot;2013/14 Duty owed but no accommodation has been secured at end of March 2014&quot;             
+## [108] &quot;2014/15 Thousands of households 2012-based interim projections for 2014&quot;                  
+## [109] &quot;2014/15 Numbers accepted as homeless and in priority need who are White&quot;                  
+## [110] &quot;2014/15 Numbers accepted as homeless and in priority need who are Black or Black British&quot; 
+## [111] &quot;2014/15 Numbers accepted as homeless and in priority need who are Asian or Asian British&quot; 
+## [112] &quot;2014/15 Numbers accepted as homeless and in priority need who are Mixed&quot;                  
+## [113] &quot;2014/15 Numbers accepted as homeless and in priority need who are Other ethnic origin&quot;    
+## [114] &quot;2014/15 Numbers accepted as homeless and in priority need who are Ethnic Group not Stated&quot;
+## [115] &quot;2014/15 Numbers accepted as homeless and in priority need total&quot;                          
+## [116] &quot;2014/15 Number per 1000 households&quot;                                                       
+## [117] &quot;2014/15 Total decisions where eligible homeless &amp; in priority need but intentionally&quot;     
+## [118] &quot;2014/15 Total decisions where eligible &amp; homeless but not in priority need&quot;               
+## [119] &quot;2014/15 Total decisions where eligible but not homeless&quot;                                  
+## [120] &quot;2014/15 Total homelessness decisions&quot;                                                     
+## [121] &quot;31 March 2015 Total households in B&amp;B (including shared annex)&quot;                           
+## [122] &quot;31 March 2015 Total households in hostels&quot;                                                
+## [123] &quot;31 March 2015 Total households in LA/HA stock&quot;                                            
+## [124] &quot;31 March 2015 Total households in private sector leased (by LA or HA)&quot;                    
+## [125] &quot;31 March 2015 Total households in other temp (including private landlord)&quot;                
+## [126] &quot;31 March 2015 Total households in temporary accommodation&quot;                                
+## [127] &quot;31 March 2015 Number per 1000 households&quot;                                                 
+## [128] &quot;2014/15 Duty owed but no accommodation has been secured at end of March 2015&quot;             
+## [129] &quot;2015/16 Thousands of households 2012-based interim projections for 2015&quot;                  
+## [130] &quot;2015/16 Numbers accepted as homeless and in priority need who are White&quot;                  
+## [131] &quot;2015/16 Numbers accepted as homeless and in priority need who are Black or Black British&quot; 
+## [132] &quot;2015/16 Numbers accepted as homeless and in priority need who are Asian or Asian British&quot; 
+## [133] &quot;2015/16 Numbers accepted as homeless and in priority need who are Mixed&quot;                  
+## [134] &quot;2015/16 Numbers accepted as homeless and in priority need who are Other ethnic origin&quot;    
+## [135] &quot;2015/16 Numbers accepted as homeless and in priority need who are Ethnic Group not Stated&quot;
+## [136] &quot;2015/16 Numbers accepted as homeless and in priority need total&quot;                          
+## [137] &quot;2015/16 Number per 1000 households&quot;                                                       
+## [138] &quot;2015/16 Total decisions where eligible homeless &amp; in priority need but intentionally&quot;     
+## [139] &quot;2015/16 Total decisions where eligible &amp; homeless but not in priority need&quot;               
+## [140] &quot;2015/16 Total decisions where eligible but not homeless&quot;                                  
+## [141] &quot;2015/16 Total homelessness decisions&quot;                                                     
+## [142] &quot;31 March 2016 Total households in B&amp;B (including shared annex)&quot;                           
+## [143] &quot;31 March 2016 Total households in hostels&quot;                                                
+## [144] &quot;31 March 2016 Total households in LA/HA stock&quot;                                            
+## [145] &quot;31 March 2016 Total households in private sector leased (by LA or HA)&quot;                    
+## [146] &quot;31 March 2016 Total households in other temp (including private landlord)&quot;                
+## [147] &quot;31 March 2016 Total households in temporary accommodation&quot;                                
+## [148] &quot;31 March 2016 Number per 1000 households&quot;                                                 
+## [149] &quot;2015/16 Duty owed but no accommodation has been secured at end of March 2015&quot;</code></pre>
+<p>The first thing to do is to try to hone in on some data I’d like to use. A quick scan of the columns and the “Local authority area” looks critical, and I’d like to see if I have yearly data for “Numbers accepted as homeless and in priority need total”:</p>
+<pre class="r"><code>ind &lt;- str_detect(names(data), &quot;priority need total&quot;)
+names(data)[ind]</code></pre>
+<pre><code>## [1] &quot;2009/10 Numbers accepted as homeless and in priority need total&quot;
+## [2] &quot;2010/11 Numbers accepted as homeless and in priority need total&quot;
+## [3] &quot;2011/12 Numbers accepted as homeless and in priority need total&quot;
+## [4] &quot;2012/13 Numbers accepted as homeless and in priority need total&quot;
+## [5] &quot;2013/14 Numbers accepted as homeless and in priority need total&quot;
+## [6] &quot;2014/15 Numbers accepted as homeless and in priority need total&quot;
+## [7] &quot;2015/16 Numbers accepted as homeless and in priority need total&quot;</code></pre>
+<p>This looks to fit the bill. Now I’ve honed in on the columns I need, let’s have a look at the structure and distribution of the data:</p>
+<pre class="r"><code>data_trim &lt;- data %&gt;% select(2, names(data)[ind])
+
+str(data_trim, give.attr = FALSE)</code></pre>
+<pre><code>## Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:    327 obs. of  8 variables:
+##  $ Local authority area                                           : chr  &quot;ENGLAND&quot; &quot;Adur&quot; &quot;Allerdale&quot; &quot;Amber Valley&quot; ...
+##  $ 2009/10 Numbers accepted as homeless and in priority need total: int  40020 71 102 30 52 42 178 93 37 232 ...
+##  $ 2010/11 Numbers accepted as homeless and in priority need total: int  44160 90 104 46 79 25 194 112 46 221 ...
+##  $ 2011/12 Numbers accepted as homeless and in priority need total: int  50290 58 63 53 100 16 161 126 78 199 ...
+##  $ 2012/13 Numbers accepted as homeless and in priority need total: int  53770 37 41 61 129 26 199 133 100 664 ...
+##  $ 2013/14 Numbers accepted as homeless and in priority need total: int  52290 10 26 64 109 85 166 116 86 853 ...
+##  $ 2014/15 Numbers accepted as homeless and in priority need total: int  54430 7 30 117 191 87 152 160 86 764 ...
+##  $ 2015/16 Numbers accepted as homeless and in priority need total: chr  &quot;57740&quot; &quot;16&quot; &quot;32&quot; &quot;101&quot; ...</code></pre>
+<pre class="r"><code>summary(data_trim)</code></pre>
+<pre><code>##  Local authority area
+##  Length:327          
+##  Class :character    
+##  Mode  :character    
+##                      
+##                      
+##                      
+##  2009/10 Numbers accepted as homeless and in priority need total
+##  Min.   :    1.0                                                
+##  1st Qu.:   30.0                                                
+##  Median :   63.0                                                
+##  Mean   :  244.8                                                
+##  3rd Qu.:  136.0                                                
+##  Max.   :40020.0                                                
+##  2010/11 Numbers accepted as homeless and in priority need total
+##  Min.   :    1.0                                                
+##  1st Qu.:   36.5                                                
+##  Median :   73.0                                                
+##  Mean   :  270.1                                                
+##  3rd Qu.:  149.0                                                
+##  Max.   :44160.0                                                
+##  2011/12 Numbers accepted as homeless and in priority need total
+##  Min.   :    0.0                                                
+##  1st Qu.:   41.0                                                
+##  Median :   85.0                                                
+##  Mean   :  307.6                                                
+##  3rd Qu.:  168.0                                                
+##  Max.   :50290.0                                                
+##  2012/13 Numbers accepted as homeless and in priority need total
+##  Min.   :    0.0                                                
+##  1st Qu.:   38.0                                                
+##  Median :   78.0                                                
+##  Mean   :  326.4                                                
+##  3rd Qu.:  178.5                                                
+##  Max.   :53770.0                                                
+##  2013/14 Numbers accepted as homeless and in priority need total
+##  Min.   :    0.0                                                
+##  1st Qu.:   38.5                                                
+##  Median :   82.0                                                
+##  Mean   :  319.8                                                
+##  3rd Qu.:  174.5                                                
+##  Max.   :52290.0                                                
+##  2014/15 Numbers accepted as homeless and in priority need total
+##  Min.   :    0.0                                                
+##  1st Qu.:   39.0                                                
+##  Median :   87.0                                                
+##  Mean   :  332.9                                                
+##  3rd Qu.:  185.0                                                
+##  Max.   :54430.0                                                
+##  2015/16 Numbers accepted as homeless and in priority need total
+##  Length:327                                                     
+##  Class :character                                               
+##  Mode  :character                                               
+##                                                                 
+##                                                                 
+## </code></pre>
+<p>I can see that apart from the annoyingly long column names, I seem to have the totals for the whole of England in the first row. So let’s fix these issues:</p>
+<pre class="r"><code>data_trim &lt;- data_trim %&gt;%
+                 slice(-1) %&gt;%
+                 set_names(&quot;LAA&quot;, 2009:2015)
+
+head(data_trim, 20)</code></pre>
+<pre><code>## # A tibble: 20 x 8
+##    LAA                    `2009` `2010` `2011` `2012` `2013` `2014` `2015`
+##    &lt;chr&gt;                   &lt;int&gt;  &lt;int&gt;  &lt;int&gt;  &lt;int&gt;  &lt;int&gt;  &lt;int&gt; &lt;chr&gt; 
+##  1 Adur                       71     90     58     37     10      7 16    
+##  2 Allerdale                 102    104     63     41     26     30 32    
+##  3 Amber Valley               30     46     53     61     64    117 101   
+##  4 Arun                       52     79    100    129    109    191 228   
+##  5 Ashfield                   42     25     16     26     85     87 93    
+##  6 Ashford                   178    194    161    199    166    152 154   
+##  7 Aylesbury Vale             93    112    126    133    116    160 177   
+##  8 Babergh                    37     46     78    100     86     86 94    
+##  9 Barking and Dagenham      232    221    199    664    853    764 941   
+## 10 Barnet                    232    251    339    595    674    677 422   
+## 11 Barnsley                   95     56     38     23     14     13 14    
+## 12 Barrow-in-Furness          40     26     29     29     19     17 18    
+## 13 Basildon                  191    232    255    282    302    351 208   
+## 14 Basingstoke and Deane       1      1      2     11     22     54 46    
+## 15 Bassetlaw                  18     27     48     75     41     91 65    
+## 16 Bath and North East S~     68    100     86     86     65     48 68    
+## 17 Bedford UA                141    107    211    242    174    164 287   
+## 18 Bexley                    128    204    346    349    420    498 483   
+## 19 Birmingham               3371   4207   3929   3957   3160   3140 3524  
+## 20 Blaby                       2      7      2      1      0      6 11</code></pre>
+<p>That’s looking a bit better. I notice that there seems to be a stray “UA” at the end of some LAAs. From the output of the <code>summary()</code> function above, I can also see that the 2015/16 column seems to have been parsed as a character, so there’s probably some non-numeric character in there. Let’s see how many places these issues affect:</p>
+<pre class="r"><code>data_trim %&gt;% filter(str_detect(LAA, &quot; UA&quot;)) %&gt;% select(LAA)</code></pre>
+<pre><code>## # A tibble: 56 x 1
+##    LAA                            
+##    &lt;chr&gt;                          
+##  1 Bath and North East Somerset UA
+##  2 Bedford UA                     
+##  3 Blackburn with Darwen UA       
+##  4 Blackpool UA                   
+##  5 Bournemouth UA                 
+##  6 Bracknell Forest UA            
+##  7 Brighton and Hove UA           
+##  8 Bristol City of UA             
+##  9 Central Bedfordshire UA        
+## 10 Cheshire East UA               
+## # ... with 46 more rows</code></pre>
+<pre class="r"><code>data_trim %&gt;% filter(str_detect(`2015`, &quot;[^0-9]+&quot;)) %&gt;% select(LAA, `2015`)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   LAA                `2015`
+##   &lt;chr&gt;              &lt;chr&gt; 
+## 1 Chorley            -     
+## 2 Eden               -     
+## 3 Hyndburn           -     
+## 4 Isles of Scilly UA -     
+## 5 Waverley           -</code></pre>
+<p>56 place names ending in “UA” and five places without data in 2015! Let’s update our trimmed data to fix these issues, and make the data tidy by gathering the year headers into their own column:</p>
+<pre class="r"><code>data_tidy &lt;- data_trim %&gt;%
+                mutate(LAA = str_replace(LAA, &quot; UA&quot;, &quot;&quot;)) %&gt;%
+                mutate(`2015` = str_replace(`2015`, &quot;-&quot;, NA_character_) %&gt;% as.integer()) %&gt;%
+                gather(year, num_homeless, -LAA) %&gt;%
+                mutate(year = as.integer(year))
+
+str(data_tidy)</code></pre>
+<pre><code>## Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:    2282 obs. of  3 variables:
+##  $ LAA         : chr  &quot;Adur&quot; &quot;Allerdale&quot; &quot;Amber Valley&quot; &quot;Arun&quot; ...
+##  $ year        : int  2009 2009 2009 2009 2009 2009 2009 2009 2009 2009 ...
+##  $ num_homeless: int  71 102 30 52 42 178 93 37 232 232 ...</code></pre>
+</div>
+<div id="initial-analysis" class="section level2">
+<h2>Initial analysis</h2>
+<p>Now I have the data in a more manageable format, let’s quickly plot the top 6 homelessness figures in each year:</p>
+<pre class="r"><code>data_tidy %&gt;%
+  group_by(year) %&gt;%
+  arrange(year, desc(num_homeless)) %&gt;% 
+  top_n(6) %&gt;%
+  ggplot(aes(x = LAA, y = num_homeless)) +
+    geom_bar(stat = &quot;identity&quot;) +
+    coord_flip() +
+    facet_wrap(~ year, ncol=2, scales=&quot;free_y&quot;)</code></pre>
+<pre><code>## Selecting by num_homeless</code></pre>
+<p><img src="/post/2018-09-13-homelessness_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>We can see that Birmingham is by far the worst offender. I’m not sure of the accuracy of these figures, but if true that is truly horrifying and it hadn’t seemed to have got any better up to 2015. Which areas have seen the most drastic improvement/deterioration over the 7 years?:</p>
+<pre class="r"><code>extremes &lt;- data_tidy %&gt;%
+                  drop_na() %&gt;%
+                  filter(year %in% c(2009, 2015)) %&gt;%
+                  group_by(LAA) %&gt;%
+                  mutate(homeless2009 = lag(num_homeless),
+                         change = num_homeless - homeless2009) %&gt;% 
+                  ungroup() %&gt;%
+                  drop_na() %&gt;%
+                  arrange(change)
+
+bind_rows(head(extremes, 8), tail(extremes, 8))</code></pre>
+<pre><code>## # A tibble: 16 x 5
+##    LAA                   year num_homeless homeless2009 change
+##    &lt;chr&gt;                &lt;int&gt;        &lt;int&gt;        &lt;int&gt;  &lt;int&gt;
+##  1 Sheffield             2015          421          946   -525
+##  2 Coventry              2015          129          538   -409
+##  3 North Tyneside        2015          149          502   -353
+##  4 Derby                 2015           28          321   -293
+##  5 Croydon               2015          222          425   -203
+##  6 Durham                2015           70          264   -194
+##  7 Cornwall              2015          250          419   -169
+##  8 Tower Hamlets         2015          522          690   -168
+##  9 Craven                2015          560            8    552
+## 10 Milton Keynes         2015          789           84    705
+## 11 Barking and Dagenham  2015          941          232    709
+## 12 Bristol City of       2015         1006          285    721
+## 13 Waltham Forest        2015         1087          286    801
+## 14 Enfield               2015         1131          241    890
+## 15 Dacorum               2015         1006           14    992
+## 16 Newham                2015         1345           97   1248</code></pre>
+<p>Sheffield was the most improved with a reduction of over 500, with Newham seeing a massive increase of over 1200.</p>
+</div>
+<div id="the-painful-part" class="section level2">
+<h2>The painful part</h2>
+<p>So having never done any geospatial analysis or mapping before, I tried doing some Google searches to see if I could find any code I could use. I quickly discovered that if I was going to do any mapping of UK regions, I was going to need to access some shape files.</p>
+<p>I managed to download some from the <a href="https://borders.ukdataservice.ac.uk/bds.html">UK Data Service website</a>. I also had enormous trouble getting the function to read the data from within this blog post, but I managed to make it work using the <code>here</code> package, which I’ve since heard good things about on Twitter.</p>
+<pre class="r"><code>shapes &lt;- st_read(dsn = paste(here::here(),&quot;./data/homelessness/BoundaryData&quot;, sep=&quot;/&quot;), layer = &quot;infuse_dist_lyr_2011&quot;) %&gt;% arrange(name)</code></pre>
+<pre><code>## Reading layer `infuse_dist_lyr_2011&#39; from data source `C:\Users\J\Documents\r-house\data\homelessness\BoundaryData&#39; using driver `ESRI Shapefile&#39;
+## Simple feature collection with 324 features and 5 fields
+## geometry type:  MULTIPOLYGON
+## dimension:      XY
+## bbox:           xmin: 82643.6 ymin: 5333.602 xmax: 655989 ymax: 657599.5
+## epsg (SRID):    NA
+## proj4string:    +proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +datum=OSGB36 +units=m +no_defs</code></pre>
+<pre class="r"><code>str(shapes)</code></pre>
+<pre><code>## Classes &#39;sf&#39; and &#39;data.frame&#39;:   324 obs. of  6 variables:
+##  $ name      : Factor w/ 324 levels &quot;Adur&quot;,&quot;Allerdale&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
+##  $ label     : Factor w/ 324 levels &quot;E92000001E06000001&quot;,..: 243 64 70 244 195 136 55 220 292 293 ...
+##  $ geo_labelw: Factor w/ 0 levels: NA NA NA NA NA NA NA NA NA NA ...
+##  $ geo_label : Factor w/ 324 levels &quot;Adur&quot;,&quot;Allerdale&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
+##  $ geo_code  : Factor w/ 324 levels &quot;E06000001&quot;,&quot;E06000002&quot;,..: 243 64 70 244 195 136 55 220 292 293 ...
+##  $ geometry  :sfc_MULTIPOLYGON of length 324; first list element: List of 1
+##   ..$ :List of 1
+##   .. ..$ : num [1:2718, 1:2] 515970 515951 515901 515901 515855 ...
+##   ..- attr(*, &quot;class&quot;)= chr  &quot;XY&quot; &quot;MULTIPOLYGON&quot; &quot;sfg&quot;
+##  - attr(*, &quot;sf_column&quot;)= chr &quot;geometry&quot;
+##  - attr(*, &quot;agr&quot;)= Factor w/ 3 levels &quot;constant&quot;,&quot;aggregate&quot;,..: NA NA NA NA NA
+##   ..- attr(*, &quot;names&quot;)= chr  &quot;name&quot; &quot;label&quot; &quot;geo_labelw&quot; &quot;geo_label&quot; ...</code></pre>
+<p>With the intent of joining my dataframes together, I identified an inconsistency in the areas given in each table (<code>diff()</code> is a very handy function!):</p>
+<pre class="r"><code>n_distinct(data_tidy$LAA)</code></pre>
+<pre><code>## [1] 326</code></pre>
+<pre class="r"><code>n_distinct(shapes$name)</code></pre>
+<pre><code>## [1] 324</code></pre>
+<pre class="r"><code>data_diff &lt;- setdiff(data_tidy$LAA, shapes$name)
+shapes_diff &lt;- setdiff(shapes$name, data_tidy$LAA)
+
+data_frame(data = data_diff,
+           shapes = c(shapes_diff,&quot;&quot;,&quot;&quot;))</code></pre>
+<pre><code>## # A tibble: 11 x 2
+##    data                       shapes                     
+##    &lt;chr&gt;                      &lt;chr&gt;                      
+##  1 Bristol City of            Bristol, City of           
+##  2 City of London             City of London,Westminster 
+##  3 Cornwall                   Cornwall,Isles of Scilly   
+##  4 Durham                     County Durham              
+##  5 Herefordshire County of    Herefordshire, County of   
+##  6 Isles of Scilly            Kingston upon Hull, City of
+##  7 Kingston upon Hull City of St Albans                  
+##  8 St Helens                  St Edmundsbury             
+##  9 St. Albans                 St. Helens                 
+## 10 St. Edmundsbury            &quot;&quot;                         
+## 11 Westminster                &quot;&quot;</code></pre>
+<p>You can see from the output above that my homelessness data has split out Westminster from the City of London, and the Isles of Scilly from Cornwall. There are also some grammatical inconsistencies that need to be sorted out. Let’s clean it up, by combining rows</p>
+<pre class="r"><code>data_final &lt;- data_tidy %&gt;%
+              #mutate_at(vars(&quot;year&quot;, &quot;num_homeless&quot;), as.numeric) %&gt;% 
+              mutate(LAA = ifelse(LAA %in% c(&quot;City of London&quot;,&quot;Westminster&quot;),
+                                   &quot;City of London,Westminster&quot;,
+                                   LAA)) %&gt;%
+              mutate(LAA = ifelse(LAA %in% c(&quot;Cornwall&quot;,&quot;Isles of Scilly&quot;),
+                                   &quot;Cornwall,Isles of Scilly&quot;,
+                                   LAA)) %&gt;%
+              mutate(LAA = ifelse(LAA == &quot;Bristol City of&quot;,&quot;Bristol, City of&quot;,LAA)) %&gt;% 
+              mutate(LAA = ifelse(LAA == &quot;Durham&quot;,&quot;County Durham&quot;,LAA)) %&gt;%
+              mutate(LAA = ifelse(LAA == &quot;Herefordshire County of&quot;,&quot;Herefordshire, County of&quot;,LAA)) %&gt;%
+              mutate(LAA = ifelse(LAA == &quot;Kingston upon Hull City of&quot;,&quot;Kingston upon Hull, City of&quot;,LAA)) %&gt;%
+              mutate(LAA = ifelse(LAA == &quot;St Helens&quot;,&quot;St. Helens&quot;,LAA)) %&gt;%
+              mutate(LAA = ifelse(LAA == &quot;St. Albans&quot;,&quot;St Albans&quot;,LAA)) %&gt;%
+              mutate(LAA = ifelse(LAA == &quot;St. Edmundsbury&quot;,&quot;St Edmundsbury&quot;,LAA)) %&gt;%
+              mutate(LAA = as.factor(LAA)) %&gt;%
+              group_by(LAA, year) %&gt;% 
+              summarise(total_homeless = sum(num_homeless)) %&gt;%
+              ungroup()</code></pre>
+<p>Next, I created a function to take a year and a set of regions and generate a heatmap. This function filters the homelessness data, joins it with the shape data, and then plots the data. I’ve included <code>regions</code> as an argument so that Birmingham can be filtered out, as it dominates the heatmap.</p>
+<pre class="r"><code>heatmap &lt;- function(inp_year, regions) {
+  
+data_joined &lt;- data_final %&gt;%
+                  filter(year==inp_year) %&gt;%
+                  filter(LAA %in% regions) %&gt;%
+                  right_join(shapes, by = c(&quot;LAA&quot;=&quot;name&quot;))
+
+max_scale &lt;- max(data_final %&gt;%
+                  filter(LAA %in% regions) %&gt;%
+                  select(total_homeless), na.rm=TRUE)
+
+  p &lt;- ggplot() +
+  geom_sf(data=data_joined, aes(fill=total_homeless), col=&quot;black&quot;) +
+    theme_void() + coord_sf(datum=NA) + 
+    scale_fill_viridis_c(name = NULL, option = &quot;magma&quot;,
+                         limits = c(0, max_scale),
+                         breaks = c(0, max_scale/2, max_scale)) +
+    labs(title = paste0(&quot;Total number of people accepted as homeless and in priority need in England in &quot;,inp_year),
+       caption = &quot;Data obtained from  http://opendata.cambridgeshireinsight.org.uk/dataset/homelessness-england&quot;)
+  print(p)
+}
+
+regions_to_include &lt;- unique(setdiff(data_final$LAA, &quot;Birmingham&quot;))
+
+save_gif(walk(min(data_final$year):max(data_final$year), heatmap, regions = regions_to_include), 
+         delay = 0.7, gif_file = &quot;animation.gif&quot;)</code></pre>
+<div class="figure">
+<img src="/img/homelessness.gif" alt="Homelessness heatmap" />
+<p class="caption">Homelessness heatmap</p>
+</div>
+<p>I certainly feel this project has been a bit of a hack job. It’s taken me over a month to write because it’s been so challenging and I’ve had to leave and come back to it so many times. I’m not proud of it, mainly because I rushed it at the end because I just wanted it done.</p>
+<p>I’ve since used Tableau, and that seems a bit easier to do heatmaps. If I were to do it again in R however, I think I’ll be taking the courses on DataCamp first!</p>
+</div>

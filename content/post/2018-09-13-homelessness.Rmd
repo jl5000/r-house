@@ -2,6 +2,9 @@
 title: "Mapping homelessness in England"
 date: "2018-09-13"
 author: "Jamie Lendrum"
+output:
+  blogdown::html_page:
+    toc: true
 tags: [r, data science, tidyverse]
 ---
 
