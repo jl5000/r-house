@@ -16,6 +16,7 @@ comments: false
 
 * [R for Data Science](http://r4ds.had.co.nz/)
 * [Cookbook for R](http://www.cookbook-r.com/)
+* [What They Forgot To Teach You About R](https://whattheyforgot.org/)
 * [Happy Git and GitHub for the useR](http://happygitwithr.com/)
 * [`blogdown`: Creating Websites with R Markdown](https://bookdown.org/yihui/blogdown/)
 * [The `tidyverse` style guide](http://style.tidyverse.org/)
