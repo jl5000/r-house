@@ -4,5 +4,4 @@
 .Ruserdata
 bookdown
 public
-data/homelessness/
-content/post/2018-09-13-homelessness.html
+data/homelessness/BoundaryData/*

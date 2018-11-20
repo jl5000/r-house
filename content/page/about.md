@@ -9,7 +9,7 @@ I work for the UK Government and have transitioned intot the Data Science area. 
 
 I graduated from the University of Portsmouth in 2001 with a Bachelor's degree in Mathematics, and spent the first 15 years of my career working as an Operational Analyst. This basically involves using a spectrum of analytical techniques ranging from complex simulation modelling to expert judgement in order to answer complex questions, usually focussed on how and where money should be spent.
 
-Over the years I've built up a broad range of skills including problem structuring, project management, systems thinking, technical assurance, and consultancy, but my first love has always been getting my hands dirty tinkering with code tackling a meaty problem. My love of mathematics and coding combined with a love of learning has pushed me to now pursue a Data Science career and I am loving it so far!
+Over the years I've built up a broad range of skills including problem structuring, project management, systems thinking, technical assurance, and consultancy, but my first love has always been getting my hands dirty tinkering with code tackling a meaty problem. My love of mathematics and coding combined with a love of learning has pushed me to now pursue a Data Science career and I am loving it so far.
 
 I have developed this blog as an excuse to become better acquainted with R-Markdown and Git, but I also want a way of documenting my progression.
 
