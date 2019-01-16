@@ -5,7 +5,7 @@ comments: false
 
 Hello, my name is Jamie Lendrum and welcome to my blog *R-house*!
 
-I work for the UK Government and have transitioned intot the Data Science area. I've created this site to share my development and my personal projects using the R environment. 
+I've recently transitioned into the Data Science area and I've created this site to share my development and my personal projects using the R environment. 
 
 I graduated from the University of Portsmouth in 2001 with a Bachelor's degree in Mathematics, and spent the first 15 years of my career working as an Operational Analyst. This basically involves using a spectrum of analytical techniques ranging from complex simulation modelling to expert judgement in order to answer complex questions, usually focussed on how and where money should be spent.
 
