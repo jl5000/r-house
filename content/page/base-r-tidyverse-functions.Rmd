@@ -47,6 +47,7 @@ df <- tibble::tribble(
 ```{r echo=FALSE}
 tbl <- DT::datatable(df, 
                      option = list(pageLength = 9,
+                                   rownames = FALSE,
                                    order = list(list(1, 'asc'), list(2, 'asc'))))
 widgetframe::frameWidget(tbl)
 ```
