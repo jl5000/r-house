@@ -1,10 +1,18 @@
 ---
-title: "Base R functions and their Tidyverse equivalents"
+title: "How do I ... with the tidyverse?"
 author: "Jamie Lendrum"
 tags: [r, tidyverse]
 ---
 
-Work in progress...pull requests welcome!
+Below is a searchable table containing base R functions and their equivalent tidyverse functions. The purpose of this page is to allow people to either:
+
+* Search for the appropriate tidyverse function given a base R function, or to
+* Search for an equivalent base R function when using the tidyverse is not possible/appropriate.
+
+I'm not a fountain of all knowledge, so if you would like to contribute to this table please submit a pull request on the following file: https://github.com/jl5000/r-house/blob/master/content/page/base-r-tidyverse-functions.Rmd (or open an issue).
+
+Happy hunting!
+
 
 ```{r include=FALSE}
 df <- tibble::tribble(
