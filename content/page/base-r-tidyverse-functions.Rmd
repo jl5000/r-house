@@ -1,0 +1,52 @@
+---
+title: "Base R functions and their Tidyverse equivalents"
+author: "Jamie Lendrum"
+tags: [r, tidyverse]
+---
+
+Work in progress...pull requests welcome!
+
+```{r include=FALSE}
+library(magrittr)
+df <- tibble::tribble(
+  ~`Tidyverse package`,      ~Function, ~`Base R Function`,
+             "dplyr",       "select",   "df[], subset",
+             "dplyr",        "slice",   "df[], subset",
+             "dplyr",       "filter",   "df[], subset",
+             "dplyr",         "pull",    "df$, df[[]]",
+             "dplyr",      "arrange",  "df[order(df)]",
+            "tibble",      "glimpse",            "str",
+             "dplyr",      "if_else",         "ifelse",
+             "dplyr",     "distinct",         "unique",
+             "dplyr",    "left_join",          "merge",
+             "dplyr",   "right_join",          "merge",
+             "dplyr",   "inner_join",          "merge",
+             "dplyr",    "full_join",          "merge",
+             "dplyr",    "summarize",      "aggregate",
+             "dplyr",    "bind_rows",          "rbind",
+             "dplyr",    "bind_cols",          "cbind",
+             "dplyr",       "mutate",      "transform",
+           "stringr",        "str_c",         "paste0",
+           "stringr",   "str_length",          "nchar",
+           "stringr",   "str_detect",          "grepl",
+           "stringr",   "str_subset",           "grep",
+           "stringr",    "str_split",       "strsplit",
+           "stringr", "str_to_upper",        "toupper",
+           "stringr", "str_to_lower",        "tolower",
+             "readr",   "read_delim",     "read.table",
+             "readr",     "read_csv",       "read.csv",
+             "readr",     "read_tsv",     "read.delim",
+             "tidyr",      "drop_na",        "na.omit",
+             "tidyr",         "nest",             "by",
+             "purrr",       "lapply",            "map",
+             "purrr",       "vapply",          "map_*",
+             "purrr",       "mapply",     "map2, pmap",
+           "ggplot2",       "ggplot",           "plot"
+  ) %>% 
+  dplyr::arrange(`Tidyverse package`, Function)
+```
+
+```{r echo=FALSE}
+tbl <- DT::datatable(df, option = list(pageLength = 25)) 
+widgetframe::frameWidget(tbl)
+```
