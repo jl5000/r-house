@@ -7,7 +7,6 @@ tags: [r, tidyverse]
 Work in progress...pull requests welcome!
 
 ```{r include=FALSE}
-library(magrittr)
 df <- tibble::tribble(
   ~`Tidyverse package`,      ~Function, ~`Base R Function`,
              "dplyr",       "select",   "df[], subset",
@@ -42,11 +41,12 @@ df <- tibble::tribble(
              "purrr",       "vapply",          "map_*",
              "purrr",       "mapply",     "map2, pmap",
            "ggplot2",       "ggplot",           "plot"
-  ) %>% 
-  dplyr::arrange(`Tidyverse package`, Function)
+  )
 ```
 
 ```{r echo=FALSE}
-tbl <- DT::datatable(df, option = list(pageLength = 9)) 
+tbl <- DT::datatable(df, 
+                     option = list(pageLength = 9,
+                                   order = list(list(1, 'asc'), list(2, 'asc'))))
 widgetframe::frameWidget(tbl)
 ```
