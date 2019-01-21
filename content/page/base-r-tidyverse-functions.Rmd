@@ -37,9 +37,9 @@ df <- tibble::tribble(
              "readr",     "read_tsv",     "read.delim",
              "tidyr",      "drop_na",        "na.omit",
              "tidyr",         "nest",             "by",
-             "purrr",       "lapply",            "map",
-             "purrr",       "vapply",          "map_*",
-             "purrr",       "mapply",     "map2, pmap",
+             "purrr",          "map",         "lapply",            
+             "purrr",        "map_*",         "vapply",                            
+             "purrr",   "map2, pmap",         "mapply",     
            "ggplot2",       "ggplot",           "plot"
   )
 ```
@@ -48,6 +48,6 @@ df <- tibble::tribble(
 tbl <- DT::datatable(df, 
                      rownames = FALSE,
                      options = list(pageLength = 9,
-                                   order = list(list(1, 'asc'), list(2, 'asc'))))
+                                   order = list(list(0, 'asc'), list(1, 'asc'))))
 widgetframe::frameWidget(tbl)
 ```
