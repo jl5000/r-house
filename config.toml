@@ -113,6 +113,6 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     weight = 5
     
 [[menu.main]]
-    name = "Tidyverse"
+    name = "Tidysearch"
     url = "page/base-r-tidyverse-functions/"
     weight = 6  

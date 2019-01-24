@@ -1,5 +1,5 @@
 ---
-title: "How do I ... with the tidyverse?"
+title: "Tidysearch"
 author: "Jamie Lendrum"
 tags: [r, tidyverse]
 ---
