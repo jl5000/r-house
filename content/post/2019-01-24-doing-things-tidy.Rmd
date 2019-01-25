@@ -11,6 +11,6 @@ This alternative 'opinionated' set of packages has been adopted now as canon by 
 
 However, some of us who began with the tidyverse do not have the experience to be able to choose an appropriate base R function when the tidyverse is not available or not appropriate for the problem at hand (e.g. lack of internet access, developing a package with minimal dependencies).
 
-Therefore, I've created a simple search tool using the `DT` package - let's call it tidysearch - for base R users to search for an appropriate tidyverse function, and for tidyverse users to be able to search for a base R function. You can find it on the navigation bar above.
+Therefore, I've created a simple search tool using the `DT` package - let's call it tidysearch - for base R users to search for an appropriate tidyverse function, and for tidyverse users to be able to search for a base R function. You can find it [here](https://r-house.netlify.com/page/base-r-tidyverse-functions/) (thanks Gerardo!).
 
 I'm hoping this will eventually become an exhaustive and definitive resource showing the overlap between the two ecosystems of packages. Please contribute if you can!
