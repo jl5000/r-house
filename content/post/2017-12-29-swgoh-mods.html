@@ -129,7 +129,7 @@ set_bonus_rules</code></pre>
 <p>This was the tricky bit. There is a website that players use to sync their game accounts with, <a href="http://www.swgoh.gg">swgoh.gg</a>, and somehow they had managed to reverse engineer the game to allow users to sync their game data with the website. Unfortunately no API was available, so there was really only one option that I could see - web scraping. I had a go, but didn’t get anywhere and realised this was beyond my skills for now, so a very kind individual behind the website <a href="http://www.crouchingrancor.com">Crouching Rancor</a> sent me a json file containing sample data of the mods contained within his game account.</p>
 <p>I imported this file and constructed a dataframe containing all the game data I should need to complete my script.</p>
 <pre class="r"><code>library(jsonlite)
-mods_json &lt;- fromJSON(&quot;data/swgoh-mods-sample.json&quot;)
+mods_json &lt;- fromJSON(&quot;data/swgoh-mods/swgoh-mods-sample.json&quot;)
 
 mods_info &lt;- data.frame(Mod.ID = mods_json$all_mods$mod_uid,
                         Initial.Toon = mods_json$all_mods$characterName,

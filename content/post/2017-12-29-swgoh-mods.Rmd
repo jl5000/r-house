@@ -103,7 +103,7 @@ I imported this file and constructed a dataframe containing all the game data I 
 
 ```{r message = FALSE}
 library(jsonlite)
-mods_json <- fromJSON("data/swgoh-mods-sample.json")
+mods_json <- fromJSON("data/swgoh-mods/swgoh-mods-sample.json")
 
 mods_info <- data.frame(Mod.ID = mods_json$all_mods$mod_uid,
                         Initial.Toon = mods_json$all_mods$characterName,

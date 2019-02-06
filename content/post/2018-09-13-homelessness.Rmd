@@ -21,7 +21,7 @@ library(tidyverse)
 library(gifski)
 library(sf)
 
-data <- read_csv("http://opendata.cambridgeshireinsight.org.uk/files/ci_opendata/P1E-%20national-%20homelessness-CLG-tab784-to2016_1.csv")
+data <- read_csv("https://data.cambridgeshireinsight.org.uk/sites/default/files/P1E-national-homelessness-CLG-tab784-to-201718-csv.csv")
 names(data)
 ```
 
@@ -47,12 +47,12 @@ I can see that apart from the annoyingly long column names, I seem to have the t
 ```{r}
 data_trim <- data_trim %>%
                  slice(-1) %>%
-                 set_names("LAA", 2009:2015)
+                 set_names("LAA", 2009:2017)
 
 head(data_trim, 20)
 ```
 
-That's looking a bit better. I notice that there seems to be a stray "UA" at the end of some LAAs.  From the output of the `summary()` function above, I can also see that the 2015/16 column seems to have been parsed as a character, so there's probably some non-numeric character in there. Let's see how many places these issues affect:
+That's looking a bit better. I notice that there seems to be a stray "UA" at the end of some LAAs.  From the output of the `summary()` function above, I can also see that the 2015-2017 columns seem to have been parsed as a character, so there's probably some non-numeric character in there. Let's see how many places these issues affect:
 
 ```{r}
 data_trim %>% filter(str_detect(LAA, " UA")) %>% select(LAA)
@@ -65,6 +65,8 @@ data_trim %>% filter(str_detect(`2015`, "[^0-9]+")) %>% select(LAA, `2015`)
 data_tidy <- data_trim %>%
                 mutate(LAA = str_replace(LAA, " UA", "")) %>%
                 mutate(`2015` = str_replace(`2015`, "-", NA_character_) %>% as.integer()) %>%
+                mutate(`2016` = str_replace(`2016`, "-", NA_character_) %>% as.integer()) %>%
+                mutate(`2017` = str_replace(`2017`, "-", NA_character_) %>% as.integer()) %>%
                 gather(year, num_homeless, -LAA) %>%
                 mutate(year = as.integer(year))
 
@@ -87,12 +89,12 @@ data_tidy %>%
   
 ```
 
-We can see that Birmingham is by far the worst offender. I'm not sure of the accuracy of these figures, but if true that is truly horrifying and it hadn't seemed to have got any better up to 2015. Which areas have seen the most drastic improvement/deterioration over the 7 years?:
+We can see that Birmingham is by far the worst offender. I'm not sure of the accuracy of these figures, but if true that is truly horrifying and it hadn't seemed to have got any better up to 2017. Which areas have seen the most drastic improvement/deterioration over the 8 years?:
 
 ```{r}
 extremes <- data_tidy %>%
                   drop_na() %>%
-                  filter(year %in% c(2009, 2015)) %>%
+                  filter(year %in% c(2009, 2017)) %>%
                   group_by(LAA) %>%
                   mutate(homeless2009 = lag(num_homeless),
                          change = num_homeless - homeless2009) %>% 
@@ -104,7 +106,7 @@ bind_rows(head(extremes, 8), tail(extremes, 8))
 
 ```
 
-Sheffield was the most improved with a reduction of over 500, with Newham seeing a massive increase of over 1200.
+Sheffield was the most improved with a reduction of 465, with Newham seeing a massive increase of over 1000.
 
 ## The painful part
 So having never done any geospatial analysis or mapping before, I tried doing some Google searches to see if I could find any code I could use. I quickly discovered that if I was going to do any mapping of UK regions, I was going to need to access some shape files.
@@ -112,7 +114,7 @@ So having never done any geospatial analysis or mapping before, I tried doing so
 I managed to download some from the [UK Data Service website](https://borders.ukdataservice.ac.uk/bds.html). I also had enormous trouble getting the function to read the data from within this blog post, but I managed to make it work using the `here` package, which I've since heard good things about on Twitter.
 
 ```{r}
-shapes <- st_read(dsn = paste(here::here(),"./data/homelessness/BoundaryData", sep="/"), layer = "infuse_dist_lyr_2011") %>% arrange(name)
+shapes <- st_read(dsn = paste(here::here(),"content/post/data/homelessness/BoundaryData", sep="/"), layer = "infuse_dist_lyr_2011") %>% arrange(name)
 
 str(shapes)
 
@@ -128,7 +130,7 @@ data_diff <- setdiff(data_tidy$LAA, shapes$name)
 shapes_diff <- setdiff(shapes$name, data_tidy$LAA)
 
 data_frame(data = data_diff,
-           shapes = c(shapes_diff,"",""))
+           shapes = c(shapes_diff,"","",""))
 ```
 
 You can see from the output above that my homelessness data has split out Westminster from the City of London, and the Isles of Scilly from Cornwall. There are also some grammatical inconsistencies that need to be sorted out. Let's clean it up, by combining rows
