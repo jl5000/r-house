@@ -31,6 +31,7 @@ df <- tibble::tribble(
              "dplyr",        "na_if","ifelse(..., NA)",
              "dplyr",     "distinct",         "unique",
              "dplyr",   "n_distinct","length(unique())",
+             "dplyr",   "group_split",         "split",
              "dplyr",    "left_join",          "merge",
              "dplyr",   "right_join",          "merge",
              "dplyr",   "inner_join",          "merge",
