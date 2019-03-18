@@ -1,0 +1,30 @@
+---
+title: "Are R ecosystems the future?"
+date: "2019-03-18"
+author: "Jamie Lendrum"
+tags: [r, tidyverse, packages]
+---
+
+
+
+<p>Some random thoughts…</p>
+<p>Over the past 6 months I’ve been creating, refining, and delivering a variety of ‘Introduction to R’ training courses. The more I do this, the more I come to the view that not nearly enough is made of taking an ecosystem-oriented view to packages.</p>
+{{% tweet "1090416279872290816" %}}
+<p>The <a href="https://cran.r-project.org/web/views/">CRAN task views</a> go some way to try to address this, but these are not recommendations, but more of a list of packages that broadly do the same thing with no indication as to whether they will work well with the other package you’re using to do another task. It’s like giving someone a 100 page cook book listing various ingredients, with no recipes.</p>
+<p>Aside from the language syntax itself, I’ve discovered that when people go off to try to apply R in their own work, the first stumbling block is often their choice of package. Whilst there is not necessarily a ‘wrong’ choice, I do find instances where they pick packages that have either been superseded or are not the easiest of packages to use. I talk to people at an R User Group, and they tell me of these outdated packages they’re using, not realising that something much more effective and user friendly came out years ago. Wouldn’t it be good if people could narrow their search down to an ecosystem of packages? Even better, wouldn’t some interactive visualisation showing the composition of these ecosystems be useful?</p>
+<p>So far I’ve identified the following ecosystems of packages (leave a comment if you know of any more!):</p>
+<ul>
+<li>Tidyverse</li>
+<li>Tidymodels</li>
+<li>Tidyverts</li>
+<li>ggplot2 extensions</li>
+<li>HTML widgets</li>
+<li>Bioconductor</li>
+<li>RMarkdown and extensions</li>
+<li>lib-r</li>
+<li>cloudyr</li>
+</ul>
+<p>Some of these are well-defined ecosystems, however I think that others could be brought together more coherently under the same umbrella (e.g. HTML widgets and RMarkdown and co.)</p>
+<p>Furthermore, there are some really great packages, such as DataExplorer and janitor, which currently don’t seem to have a broader ‘home’. I’d really like to see these integrated into existing ecosystems, or baked into new ecosystems.</p>
+<p>Then there’s the issue of who gets to decide how packages converge into ecosystems? Package maintainers have a good understanding of the intent of their package, and are probably well placed to know what differentiates their package from others like it, it possibly being borne out of necessity as the alternatives didn’t do the job well enough. However, package maintainers may not have pitched their package at the right level for the average user, and therefore may be missing that all important independent view.</p>
+<p>I dare say there will be some who are strongly opposed to the idea. In fact I remember reading a blog some time ago about it being difficult for packages to make a name for themselves when faced with the competition of ‘de-facto’ ecosystems. I don’t dispute that. However, I think that good packages should strive to find their place in the grander scheme of things and avoid duplicating existing functionality, which can only lead to more collaboration and cross-compatibility…and that’s got to be a good thing, right?</p>
