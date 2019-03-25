@@ -21,15 +21,21 @@ So far I've identified the following ecosystems of packages (leave a comment if 
 
 * Tidyverse
 * Tidymodels
+* easystats (thanks to Daniel)
 * Tidyverts
 * ggplot2 extensions
 * HTML widgets
 * Bioconductor
 * RMarkdown and extensions
 * lib-r
+* ROpenSci (thanks to kent37)
 * cloudyr
 
 Some of these are well-defined ecosystems, however I think that others could be brought together more coherently under the same umbrella (e.g. HTML widgets and RMarkdown and co.)
+
+```{r echo=FALSE}
+blogdown::shortcodes("tweet", "1101936983033692161")
+```
 
 Furthermore, there are some really great packages, such as DataExplorer and janitor, which currently don't seem to have a broader 'home'. I'd really like to see these integrated into existing ecosystems, or baked into new ecosystems.
 
