@@ -74,7 +74,7 @@ Next, I'll plug the data (except character names) into the `ggpairs()` function.
 ggpairs(stats_clean[,2:17])
 ```
 
-![](swgoh_pairs_plot.png)
+![](img/swgoh_pairs_plot.png)
 
 This is some great functionality, and I was somewhat surprised that these attributes didn't seem to be more correlated. I think this means that when I get around to doing PCA, I'm going to find I'm going to need to retain quite a few Principle Components to preserve the majority of the variability in the data.
 
