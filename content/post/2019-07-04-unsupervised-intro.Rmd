@@ -1,0 +1,81 @@
+---
+title: "Experimentation with Unsupervised Learning"
+date: "2019-07-04"
+author: "Jamie Lendrum"
+tags: [r, tidyverse, unsupervised learning, rvest, ggally, star wars]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Motivation
+
+I've written before about my learning plans, which always seem to be in a state of flux, and in particular learning about machine learning. Part of the reason why I'm so reticent is because I'm a mathematician and statistics does not come natural or easy for me.
+
+My limited past experience has exposed to me just how much I don't know. It's fairly easy to apply a statistical model in R, and even have a go at assessing its performance, however I am acutely aware that there is a certain 'dark art' to it requiring a deeper understanding of knowing exactly how to interpret results, and how far you can take it. This is not something I don't think I would ever feel comfortable doing without being a statistician.
+
+However, my mental model of machine learning has this being particularly applicable to supervised learning. Unsupervised learning, to me, seems to be mainly linear algebra from what I can tell - a subject I am much more comfortable with. Yes, I'm conveniently ignoring reinforcement learning, and yes, there is some overlap between supervised and unsupervised learning. However, speaking crudely, in a manner that helps steer my own development, I believe it's a decent rule of thumb to go with for now. It also seems to nicely align with my preference for EDA, rather than prediction.
+
+I also realise that such a decision may draw criticisms such as "to be a decent data scientist you need to at least know how to apply linear and logistic regression". I get that, and I do know the principles, but I'm a perfectionist and I am burdened with a need to nail a topic (within reason) before moving on to the next, and unsupervised learning seems like lower hanging fruit (and seems to have more utility).
+
+With that preamble out of the way, I've decided that now is the time for me to start looking into unsupervised techniques. I plan to cover bread and butter algorithms such as PCA, k-means clustering, and hierarchical clustering, all the way through to more exotic algorithms like Self-Organising Maps and t-distributed stochastic neighbour embedding. In a series of blog posts I want to cover these algortihms and find packages and workflows I feel comfortable using. I hope to have got through most of it by Christmas.
+
+## The data
+
+In one of my first blog posts, I wrote about a fairly substantial personal project to write an optimisation algorithm to help with the mobile game Star Wars: Galaxy of Heroes. Despite not having played the game for several years, I do know it has some nice datasets to use for unsupervised learning and I think some contextual knowledge may help. I may need some other data eventually, but this will do for now.
+
+I'm going to attempt to scrape the data from a website, clean it up, and try out the `ggpairs()` function from the `GGally` package. This seems to be the most versatile function for creating matrix plots to examine distributions and correlations of variables in a dataset.
+
+```{r}
+library(tidyverse)
+library(rvest)
+library(GGally)
+```
+
+I get the URL of the website, and then use Hadley Wickham's fantastic `rvest` package to scrape the table from the website.
+
+```{r}
+swgoh_url <- "https://swgoh.gg/characters/stats/"
+
+stats <- read_html(swgoh_url) %>%
+              html_table() %>%
+              purrr::pluck(1)
+
+glimpse(stats)
+```
+
+That was just ridiculously easy. I love R.
+
+The data is pretty clean already, and mostly consists of numeric variables. There are however some columns which require some work. Since some of the numbers are large enough to use commas, we need to parse these as numbers, and also convert some of the percentages to decimals. I'll also only use a subset of attributes of characters.
+
+```{r}
+stats_clean <- stats %>%
+                select(`Character Name`:`Health Steal`) %>%
+                mutate_at(vars(Health, `Max Ability`, Protection, Tenacity, `Health Steal`), parse_number) %>%
+                mutate_at(vars(Tenacity, `Health Steal`), ~ ./100)
+
+glimpse(stats_clean)
+
+```
+
+As I don't want to keep scraping the website every time I want to use the data, I'll write it to CSV:
+
+```{r}
+stats_clean %>% 
+  write_csv(here::here("content/post/data/unsupervised-learning/swgoh_stats.csv"))
+```
+
+## Initial EDA
+
+Next, I'll plug the data (except character names) into the `ggpairs()` function. As I was drafting this blog post, it was taking a very long time to run, but at the time of writing it seems to have corrected itself. Nevertheless, I've saved the output as an image as it has quite a few plots on it.
+
+```{r, eval=FALSE}
+ggpairs(stats_clean[,2:17])
+```
+
+![](swgoh_pairs_plot.png)
+
+This is some great functionality, and I was somewhat surprised that these attributes didn't seem to be more correlated. I think this means that when I get around to doing PCA, I'm going to find I'm going to need to retain quite a few Principle Components to preserve the majority of the variability in the data.
+
+The `ggpairs()` function has quite a few options which I'm not going to explore here now as I'm going to try to keep the posts in this series fairly brief. I'll pause here and try out k-means clustering in the next post.
