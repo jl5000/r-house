@@ -118,7 +118,7 @@ glimpse(stats_clean)</code></pre>
 <p>Next, I’ll plug the data (except character names) into the <code>ggpairs()</code> function. As I was drafting this blog post, it was taking a very long time to run, but at the time of writing it seems to have corrected itself. Nevertheless, I’ve saved the output as an image as it has quite a few plots on it.</p>
 <pre class="r"><code>ggpairs(stats_clean[,2:17])</code></pre>
 <div class="figure">
-<img src="img/swgoh_pairs_plot.png" />
+<img src="/img/swgoh_pairs_plot.png" />
 
 </div>
 <p>This is some great functionality, and I was somewhat surprised that these attributes didn’t seem to be more correlated. I think this means that when I get around to doing PCA, I’m going to find I’m going to need to retain quite a few Principle Components to preserve the majority of the variability in the data.</p>
