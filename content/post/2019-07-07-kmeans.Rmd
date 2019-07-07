@@ -1,8 +1,8 @@
 ---
-title: "Experimentation with k-means clustering"
+title: "Use the k-means clustering, Luke"
 date: "2019-07-07"
 author: "Jamie Lendrum"
-tags: [r, tidyverse, unsupervised learning, rvest, ggally, star wars]
+tags: [r, tidyverse, broom, kmeans, clustering, star wars]
 ---
 
 ```{r setup, include=FALSE}
@@ -10,23 +10,28 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = here::here())
 ```
 
-.
+In my last post I scraped some character statistics from the mobile game Star Wars: Galaxy of Heroes. In this post, I'll be aiming to try out k-means clustering in order to see if it comes out with an intuitive result, and to learn how to integrate this kind of analysis into a tidy workflow using `broom`. 
+
+First I'll load the required packages and set some plot preferences.
 
 ```{r}
 library(tidyverse)
 library(broom)
-library(gganimate)
 theme_set(theme_bw())
 ```
 
-
+Here is the data I had previously scraped. It contains 176 Star Wars characters, each with 16 performance attributes.
 
 ```{r}
 swgoh_stats <- read_csv("content/post/data/unsupervised-learning/swgoh_stats.csv")
 glimpse(swgoh_stats)
 ```
 
+Some things to note straight off the bat. This algorithm can only deal with numeric data as it calculates distances from centroids. We also have to provide it with a number of clusters (centers) which requires either some a priori knowledge of the data, or some experimentation (or both). 
 
+There is also a stochastic element to the algorithm as the first step assigns each point to a random cluster. The algorithm can be repeated several times (with the `nstart` parameter) and the best performing run used. This means that if reproducibility is needed, a random number seed must be set. I'll be setting a new seed every time I generate some analysis with specific attributions I'd like to have reproduced.
+
+First, let's have a look at a single `kmeans()` model using an arbitrary 3 clusters:
 
 ```{r}
 set.seed(1)
@@ -34,27 +39,41 @@ test_km <- kmeans(swgoh_stats[,-1], centers = 3, nstart = 50)
 test_km
 ```
 
-Looking at the summary
+Printing the model object gives us some useful information, including cluster sizes, cluster means (centroids), a vector of cluster attributions for each character, and some information about the performance of the clustering. For k-means, the objective is to maximise the between-cluster sum of squares (variance) and minimise the within-cluster sum of squares, i.e. have tight clusters that are well separated. The total sum of squares is the total of these two figures, and so ideally we'd like to have as much of the variance as possible coming from the between-cluster variance instead of the within-cluster variance. Hence, 54.9% is a measure of cluster performance. If every point was its own cluster, it would be 100%. 
+
+Looking at the summary, we get some slightly different information, which indicates that integrating this model into a tidy workflow may be tricky as it is essentially a list of different sized elements.
 
 ```{r}
 summary(test_km)
 ```
 
+This is where the `broom` package comes in, which is installed with the `tidyverse`. This package is used for turning messy model objects like this into tidy tibbles and has three main functions:
+
+The `glance()` function gives a single row of top-level metrics. This is useful for extracting performance measures.
 
 ```{r}
 glance(test_km)
 ```
 
+The `tidy()` function gives a row for each cluster. I can't imagine I'd use this one too often for k-means.
 
 ```{r}
 tidy(test_km)
 ```
 
+The `augment()` function gives a row for each observation. You not only have to provide the model object, but also the original data (exactly as it was originally used) and it augments it with cluster attribution. This is where the main results lie.
 
 ```{r}
 augment(test_km, swgoh_stats[,-1])
 ```
 
+The question then is how to implement these into a tidy workflow, especially when you may want to experiment with many different models. After reading about it online and some experimentation, I think I have it figured out. The trick seems to involve 3 steps:
+
+1. Create a tibble with a list column of models;
+2. Use one of the `broom` functions above to create another list column, dependent on the question being asked;
+3. Unnest the `broom`-derived list column to surface the appropriate model parameters in the tibble. 
+
+As an example, the first thing to do here is to find an appropriate number of clusters to use. Therefore I create a tibble with a row for a number of clusters from 1 to 20, and map each of these numbers to the kmeans algorithm to create a column of models. Since I'm interested in how model performance changes with the number of clusters, I map each model to the `glance()` function and unnest it. I can then generate a scree plot to try to find an appropriate elbow in the curve. Instead of using the total within-cluster sum of squares, I normalise it as it I can interpret it more usefully.
 
 ```{r}
 tibble(clusters = 1:20) %>% 
@@ -65,8 +84,12 @@ tibble(clusters = 1:20) %>%
   geom_line()
 ```
 
+The scree plot says that when there is once cluster performance is at its worst possible, however it's difficult to choose a number of clusters as there's no obvious knee (apart from the one at clusters = 2, which has performance of around 43%). I'll initially go with 10 as that seems to give around 80% performance.
+
+Now I've chosen a number of clusters, I'll look at how characters are clustered for each attribute. This time I use the `augment()` function to get cluster attributions. Due to the size of the data, I also only use a random 50% of the data from each cluster:
 
 ```{r}
+set.seed(123)
 kmeans(swgoh_stats[,-1], centers = 10, nstart = 50) %>%
   augment(swgoh_stats[,-1]) %>%
   bind_cols(swgoh_stats[,1]) %>%
@@ -82,6 +105,9 @@ kmeans(swgoh_stats[,-1], centers = 10, nstart = 50) %>%
   theme(axis.text.y = element_blank())
 ```
 
+In this plot, I'm surprised to see that it's difficult to distinguish between clusters, except for health and protection. Since these have by far the biggest values and I don't want to cluster by these alone, it's clear I have to scale the values. One thing I learned is that the `scale()` function is used for scaling and centering, and it does both by default. It also returns a matrix, so I have to turn it back into a tibble.
+
+Let's redo the scree plot.
 
 ```{r}
 swgoh_scaled <- scale(swgoh_stats[,-1]) %>% as_tibble()
@@ -94,13 +120,16 @@ tibble(clusters = 1:20) %>%
   geom_line() 
 ```
 
+The scree plot doesn't look too different, so I'll stick with 10 clusters for now.
 
 ```{r}
+set.seed(124)
 scaled_clustering <- kmeans(swgoh_scaled, centers = 10, nstart = 50) %>%
   augment(swgoh_scaled) %>%
   bind_cols(swgoh_stats[,1]) 
 ```
 
+Let's see if the clustering has improved across attributes:
 
 ```{r}
 scaled_clustering %>%
@@ -116,17 +145,78 @@ scaled_clustering %>%
   theme(axis.text.y = element_blank())
 ```
 
+This seems much better. Next, I'd like to see which characters are being clustered together to see if I can spot any patterns. As there's no wordcloud geom for `ggplot2` I just create a bit of a simple one, using `ggrepel` to avoid overlapping character names as much as possible.
 
-```{r}
+```{r fig.height=7,fig.width=10}
 scaled_clustering %>% 
   select(`Character Name`, .cluster) %>%
   mutate(x = runif(n(), 0, 10),
          y = runif(n(), 0, 10)) %>%
   ggplot(aes(x=x,y=y, label=`Character Name`)) +
   ggrepel::geom_text_repel(size = 3) +
-  theme_minimal() +
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
   facet_wrap(~.cluster)
 ```
 
+From what I know about the game, some interesting things pop out to me straightaway:
 
+* Cluster 2 seems to contain support characters - for example Jawa Engineer speeds up droids, and Hermit Yoda provides buffs to Jedi characters.
+* Cluster 6 contains only two characters and both of these were introduced very recently. Perhaps the developers are trying characters with a different kind of balance;
+* Cluster 7 seems to have captured many characters known as "tanks". These have high health/protection and are designed to soak up damage;
+* Cluster 8 contains some notable attackers with high damage output.
 
+Spotting these patterns is quite encouraging! I wasn't originally intending to do this, but I am fascinated to find out how these clusters map to character roles. There's no way I can find of downloading this data, so I manually created it from data on the website:
+
+```{r}
+swgoh_roles <- read_csv("content/post/data/unsupervised-learning/swgoh_roles.csv") %>%
+  mutate(role = case_when(!is.na(attacker) ~ "Attacker",
+                          !is.na(support) ~ "Support",
+                          !is.na(tank) ~ "Tank",
+                          !is.na(healer) ~ "Healer")) %>% 
+  select(`Character Name`, role)
+
+glimpse(swgoh_roles)
+```
+
+Let's recreate the ten 'wordclouds' to see how the characters are being clustered by role:
+
+```{r fig.height=7,fig.width=10}
+scaled_clustering %>%
+  left_join(swgoh_roles) %>%
+  select(`Character Name`, .cluster, role) %>%
+  mutate(x = runif(n(), 0, 10),
+         y = runif(n(), 0, 10)) %>%
+  ggplot(aes(x=x,y=y, label=`Character Name`)) +
+  ggrepel::geom_text_repel(aes(col = role), size = 3) +
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
+  facet_wrap(~.cluster)
+```
+
+It does seem that my observations were correct, and tanks are indeed focussed in cluster 7. Cluster 8 also seems to exclusively contain attackers, with the role also being prevalent in clusters 4 and 9. Clusters 2 and 10 seem to be focussed on support roles.
+
+Given there are 4 roles, I'm curious to see how well k-means is able to distinguish between them if we assume 4 cluster:
+
+```{r fig.height=7,fig.width=7}
+set.seed(125)
+kmeans(swgoh_scaled, centers = 4, nstart = 50) %>%
+  augment(swgoh_scaled) %>%
+  bind_cols(swgoh_stats[,1]) %>%
+  left_join(swgoh_roles) %>%
+  select(`Character Name`, .cluster, role) %>%
+  mutate(x = runif(n(), 0, 10),
+         y = runif(n(), 0, 10)) %>%
+  ggplot(aes(x=x,y=y, label=`Character Name`)) +
+  ggrepel::geom_text_repel(aes(col = role), size = 3) +
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
+  facet_wrap(~.cluster)
+```
+
+Interesting! Three of the clusters seem to be capuring support, attacker, and tank characters pretty well, however the fourth cluster seems to be a bit of a mess...this probably because healing abilities are given to a range of characters. 
+
+This seems to be a pretty good algorithm, I'm interested to see how other compare. Next up, hierarchical clustering!
