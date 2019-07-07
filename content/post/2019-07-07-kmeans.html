@@ -1,0 +1,197 @@
+---
+title: "Experimentation with k-means clustering"
+date: "2019-07-07"
+author: "Jamie Lendrum"
+tags: [r, tidyverse, unsupervised learning, rvest, ggally, star wars]
+---
+
+
+
+<p>.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.2.0     ✔ purrr   0.3.2
+## ✔ tibble  2.1.3     ✔ dplyr   0.8.1
+## ✔ tidyr   0.8.3     ✔ stringr 1.4.0
+## ✔ readr   1.3.1     ✔ forcats 0.4.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(broom)
+library(gganimate)
+theme_set(theme_bw())</code></pre>
+<pre class="r"><code>swgoh_stats &lt;- read_csv(&quot;content/post/data/unsupervised-learning/swgoh_stats.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   `Character Name` = col_character(),
+##   Power = col_double(),
+##   Speed = col_double(),
+##   Health = col_double(),
+##   `Max Ability` = col_double(),
+##   `Physical Dmg` = col_double(),
+##   `Physical Crit` = col_double(),
+##   `Special Dmg` = col_double(),
+##   `Special Crit` = col_double(),
+##   `Armor Pen` = col_double(),
+##   `Resistance Pen` = col_double(),
+##   Potency = col_double(),
+##   Protection = col_double(),
+##   Armor = col_double(),
+##   Resistance = col_double(),
+##   Tenacity = col_double(),
+##   `Health Steal` = col_double()
+## )</code></pre>
+<pre class="r"><code>glimpse(swgoh_stats)</code></pre>
+<pre><code>## Observations: 176
+## Variables: 17
+## $ `Character Name` &lt;chr&gt; &quot;Aayla Secura&quot;, &quot;Admiral Ackbar&quot;, &quot;Ahsoka Tano&quot;…
+## $ Power            &lt;dbl&gt; 18972, 18972, 21378, 21378, 21378, 24358, 25143…
+## $ Speed            &lt;dbl&gt; 145, 139, 125, 168, 110, 124, 167, 165, 131, 13…
+## $ Health           &lt;dbl&gt; 32108, 35392, 27138, 30636, 47459, 35381, 34870…
+## $ `Max Ability`    &lt;dbl&gt; 11375, 6020, 11223, 10728, 4485, 7633, 11982, 4…
+## $ `Physical Dmg`   &lt;dbl&gt; 3602, 3286, 3657, 3617, 2056, 2970, 3804, 4207,…
+## $ `Physical Crit`  &lt;dbl&gt; 1022, 333, 1110, 1079, 470, 734, 869, 812, 575,…
+## $ `Special Dmg`    &lt;dbl&gt; 2356, 3718, 1469, 1770, 3366, 2772, 1559, 1363,…
+## $ `Special Crit`   &lt;dbl&gt; 0, 60, 30, 40, 75, 115, 0, 60, 0, 90, 225, 565,…
+## $ `Armor Pen`      &lt;dbl&gt; 184, 75, 329, 164, 5, 144, 307, 517, 81, 35, 5,…
+## $ `Resistance Pen` &lt;dbl&gt; 15, 37, 0, 0, 60, 197, 0, 5, 5, 5, 60, 185, 0, …
+## $ Potency          &lt;dbl&gt; 0.41, 0.36, 0.23, 0.38, 0.07, 0.43, 0.33, 0.72,…
+## $ Protection       &lt;dbl&gt; 41388, 39690, 34900, 39500, 54640, 36710, 44131…
+## $ Armor            &lt;dbl&gt; 309, 454, 295, 301, 488, 289, 278, 217, 508, 41…
+## $ Resistance       &lt;dbl&gt; 116, 423, 110, 152, 471, 124, 104, 76, 431, 253…
+## $ Tenacity         &lt;dbl&gt; 0.50, 0.60, 0.33, 0.54, 0.56, 0.42, 0.38, 0.29,…
+## $ `Health Steal`   &lt;dbl&gt; 0.15, 0.15, 0.35, 0.15, 0.30, 0.55, 0.20, 0.05,…</code></pre>
+<pre class="r"><code>set.seed(1)
+test_km &lt;- kmeans(swgoh_stats[,-1], centers = 3, nstart = 50)
+test_km</code></pre>
+<pre><code>## K-means clustering with 3 clusters of sizes 81, 51, 44
+## 
+## Cluster means:
+##      Power    Speed   Health Max Ability Physical Dmg Physical Crit
+## 1 21025.85 149.7654 34730.53    8365.827     3255.432      730.3086
+## 2 21115.14 158.9608 32173.96    9040.569     3320.804      802.4118
+## 3 21369.43 141.5455 42204.59    7059.500     3200.682      566.2045
+##   Special Dmg Special Crit Armor Pen Resistance Pen   Potency Protection
+## 1    2652.531     97.55556  149.7160       40.86420 0.4234568   41969.47
+## 2    2673.176    121.09804  169.5098       54.33333 0.4323529   34069.16
+## 3    2194.000     45.79545  105.5000       11.31818 0.4095455   51363.80
+##      Armor Resistance  Tenacity Health Steal
+## 1 366.1728   238.2222 0.4413580    0.1709877
+## 2 311.6471   209.3333 0.4249020    0.1568627
+## 3 517.8409   363.3864 0.4929545    0.1977273
+## 
+## Clustering vector:
+##   [1] 1 1 2 1 3 2 1 2 1 1 3 1 1 1 1 1 2 1 3 3 1 1 1 1 1 1 2 3 1 3 2 3 1 3 1
+##  [36] 2 1 2 1 3 2 3 1 1 2 2 3 1 1 2 1 1 2 3 1 1 2 1 1 2 2 3 1 1 1 3 2 3 2 1
+##  [71] 3 3 1 3 2 2 1 2 2 2 1 2 3 1 2 3 3 2 2 3 1 1 1 1 2 1 2 1 1 2 1 3 2 3 3
+## [106] 1 1 1 3 2 1 2 2 2 1 1 1 1 3 2 3 2 3 1 1 3 3 2 3 1 1 2 2 1 2 1 1 1 2 2
+## [141] 1 2 2 3 2 1 3 3 3 2 1 3 1 3 1 3 1 1 3 2 3 1 1 1 1 3 1 1 1 3 2 1 2 2 3
+## [176] 1
+## 
+## Within cluster sum of squares by cluster:
+## [1] 2788849852 2446171455 2763654327
+##  (between_SS / total_SS =  54.9 %)
+## 
+## Available components:
+## 
+## [1] &quot;cluster&quot;      &quot;centers&quot;      &quot;totss&quot;        &quot;withinss&quot;    
+## [5] &quot;tot.withinss&quot; &quot;betweenss&quot;    &quot;size&quot;         &quot;iter&quot;        
+## [9] &quot;ifault&quot;</code></pre>
+<p>Looking at the summary</p>
+<pre class="r"><code>summary(test_km)</code></pre>
+<pre><code>##              Length Class  Mode   
+## cluster      176    -none- numeric
+## centers       48    -none- numeric
+## totss          1    -none- numeric
+## withinss       3    -none- numeric
+## tot.withinss   1    -none- numeric
+## betweenss      1    -none- numeric
+## size           3    -none- numeric
+## iter           1    -none- numeric
+## ifault         1    -none- numeric</code></pre>
+<pre class="r"><code>glance(test_km)</code></pre>
+<pre><code>## # A tibble: 1 x 4
+##          totss tot.withinss   betweenss  iter
+##          &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;int&gt;
+## 1 17741410664.  7998675634. 9742735030.     3</code></pre>
+<pre class="r"><code>tidy(test_km)</code></pre>
+<pre><code>## # A tibble: 3 x 19
+##       x1    x2     x3    x4    x5    x6    x7    x8    x9   x10   x11
+##    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 21026.  150. 34731. 8366. 3255.  730. 2653.  97.6  150.  40.9 0.423
+## 2 21115.  159. 32174. 9041. 3321.  802. 2673. 121.   170.  54.3 0.432
+## 3 21369.  142. 42205. 7060. 3201.  566. 2194   45.8  106.  11.3 0.410
+## # … with 8 more variables: x12 &lt;dbl&gt;, x13 &lt;dbl&gt;, x14 &lt;dbl&gt;, x15 &lt;dbl&gt;,
+## #   x16 &lt;dbl&gt;, size &lt;int&gt;, withinss &lt;dbl&gt;, cluster &lt;fct&gt;</code></pre>
+<pre class="r"><code>augment(test_km, swgoh_stats[,-1])</code></pre>
+<pre><code>## # A tibble: 176 x 17
+##    Power Speed Health Max.Ability Physical.Dmg Physical.Crit Special.Dmg
+##    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;         &lt;dbl&gt;       &lt;dbl&gt;
+##  1 18972   145  32108       11375         3602          1022        2356
+##  2 18972   139  35392        6020         3286           333        3718
+##  3 21378   125  27138       11223         3657          1110        1469
+##  4 21378   168  30636       10728         3617          1079        1770
+##  5 21378   110  47459        4485         2056           470        3366
+##  6 24358   124  35381        7633         2970           734        2772
+##  7 25143   167  34870       11982         3804           869        1559
+##  8 21378   165  20693        4205         4207           812        1363
+##  9 21378   131  36543        4020         3126           575        2226
+## 10 21378   136  37121        4215         3332           904        2487
+## # … with 166 more rows, and 10 more variables: Special.Crit &lt;dbl&gt;,
+## #   Armor.Pen &lt;dbl&gt;, Resistance.Pen &lt;dbl&gt;, Potency &lt;dbl&gt;,
+## #   Protection &lt;dbl&gt;, Armor &lt;dbl&gt;, Resistance &lt;dbl&gt;, Tenacity &lt;dbl&gt;,
+## #   Health.Steal &lt;dbl&gt;, .cluster &lt;fct&gt;</code></pre>
+<pre class="r"><code>tibble(clusters = 1:20) %&gt;% 
+  mutate(mod = map(clusters, ~ kmeans(swgoh_stats[,-1], centers = .x, nstart = 50))) %&gt;%
+  mutate(glanced = map(mod, glance)) %&gt;%
+  unnest(glanced) %&gt;%
+  ggplot(aes(x=clusters, y = tot.withinss/totss)) +
+  geom_line()</code></pre>
+<p><img src="/post/2019-07-07-kmeans_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>kmeans(swgoh_stats[,-1], centers = 10, nstart = 50) %&gt;%
+  augment(swgoh_stats[,-1]) %&gt;%
+  bind_cols(swgoh_stats[,1]) %&gt;%
+  mutate(`Character Name` = fct_reorder(`Character Name`, paste0(.cluster))) %&gt;%
+  group_by(.cluster) %&gt;% 
+  sample_frac(0.5) %&gt;% 
+  ungroup() %&gt;% 
+  gather(attribute, value, -`Character Name`, -.cluster) %&gt;%
+  ggplot(aes(x = `Character Name`, y = value, fill = .cluster)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~attribute, drop = TRUE, scales = &quot;free&quot;) +
+  theme(axis.text.y = element_blank())</code></pre>
+<p><img src="/post/2019-07-07-kmeans_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>swgoh_scaled &lt;- scale(swgoh_stats[,-1]) %&gt;% as_tibble()
+
+tibble(clusters = 1:20) %&gt;% 
+  mutate(mod = map(clusters, ~ kmeans(swgoh_scaled, centers = .x, nstart = 50))) %&gt;%
+  mutate(glanced = map(mod, glance)) %&gt;%
+  unnest(glanced) %&gt;%
+  ggplot(aes(x=clusters, y = tot.withinss/totss)) +
+  geom_line() </code></pre>
+<p><img src="/post/2019-07-07-kmeans_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>scaled_clustering &lt;- kmeans(swgoh_scaled, centers = 10, nstart = 50) %&gt;%
+  augment(swgoh_scaled) %&gt;%
+  bind_cols(swgoh_stats[,1]) </code></pre>
+<pre class="r"><code>scaled_clustering %&gt;%
+  mutate(`Character Name` = fct_reorder(`Character Name`, paste0(.cluster))) %&gt;%
+  group_by(.cluster) %&gt;% 
+  sample_frac(0.5) %&gt;% 
+  ungroup() %&gt;% 
+  gather(attribute, value, -`Character Name`, -.cluster) %&gt;%
+  ggplot(aes(x = `Character Name`, y = value, fill = .cluster)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~attribute, drop=TRUE, scales = &quot;free&quot;) +
+  theme(axis.text.y = element_blank())</code></pre>
+<p><img src="/post/2019-07-07-kmeans_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>scaled_clustering %&gt;% 
+  select(`Character Name`, .cluster) %&gt;%
+  mutate(x = runif(n(), 0, 10),
+         y = runif(n(), 0, 10)) %&gt;%
+  ggplot(aes(x=x,y=y, label=`Character Name`)) +
+  ggrepel::geom_text_repel(size = 3) +
+  theme_minimal() +
+  facet_wrap(~.cluster)</code></pre>
+<p><img src="/post/2019-07-07-kmeans_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>

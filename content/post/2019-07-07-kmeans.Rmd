@@ -1,0 +1,132 @@
+---
+title: "Experimentation with k-means clustering"
+date: "2019-07-07"
+author: "Jamie Lendrum"
+tags: [r, tidyverse, unsupervised learning, rvest, ggally, star wars]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = here::here())
+```
+
+.
+
+```{r}
+library(tidyverse)
+library(broom)
+library(gganimate)
+theme_set(theme_bw())
+```
+
+
+
+```{r}
+swgoh_stats <- read_csv("content/post/data/unsupervised-learning/swgoh_stats.csv")
+glimpse(swgoh_stats)
+```
+
+
+
+```{r}
+set.seed(1)
+test_km <- kmeans(swgoh_stats[,-1], centers = 3, nstart = 50)
+test_km
+```
+
+Looking at the summary
+
+```{r}
+summary(test_km)
+```
+
+
+```{r}
+glance(test_km)
+```
+
+
+```{r}
+tidy(test_km)
+```
+
+
+```{r}
+augment(test_km, swgoh_stats[,-1])
+```
+
+
+```{r}
+tibble(clusters = 1:20) %>% 
+  mutate(mod = map(clusters, ~ kmeans(swgoh_stats[,-1], centers = .x, nstart = 50))) %>%
+  mutate(glanced = map(mod, glance)) %>%
+  unnest(glanced) %>%
+  ggplot(aes(x=clusters, y = tot.withinss/totss)) +
+  geom_line()
+```
+
+
+```{r}
+kmeans(swgoh_stats[,-1], centers = 10, nstart = 50) %>%
+  augment(swgoh_stats[,-1]) %>%
+  bind_cols(swgoh_stats[,1]) %>%
+  mutate(`Character Name` = fct_reorder(`Character Name`, paste0(.cluster))) %>%
+  group_by(.cluster) %>% 
+  sample_frac(0.5) %>% 
+  ungroup() %>% 
+  gather(attribute, value, -`Character Name`, -.cluster) %>%
+  ggplot(aes(x = `Character Name`, y = value, fill = .cluster)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~attribute, drop = TRUE, scales = "free") +
+  theme(axis.text.y = element_blank())
+```
+
+
+```{r}
+swgoh_scaled <- scale(swgoh_stats[,-1]) %>% as_tibble()
+
+tibble(clusters = 1:20) %>% 
+  mutate(mod = map(clusters, ~ kmeans(swgoh_scaled, centers = .x, nstart = 50))) %>%
+  mutate(glanced = map(mod, glance)) %>%
+  unnest(glanced) %>%
+  ggplot(aes(x=clusters, y = tot.withinss/totss)) +
+  geom_line() 
+```
+
+
+```{r}
+scaled_clustering <- kmeans(swgoh_scaled, centers = 10, nstart = 50) %>%
+  augment(swgoh_scaled) %>%
+  bind_cols(swgoh_stats[,1]) 
+```
+
+
+```{r}
+scaled_clustering %>%
+  mutate(`Character Name` = fct_reorder(`Character Name`, paste0(.cluster))) %>%
+  group_by(.cluster) %>% 
+  sample_frac(0.5) %>% 
+  ungroup() %>% 
+  gather(attribute, value, -`Character Name`, -.cluster) %>%
+  ggplot(aes(x = `Character Name`, y = value, fill = .cluster)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~attribute, drop=TRUE, scales = "free") +
+  theme(axis.text.y = element_blank())
+```
+
+
+```{r}
+scaled_clustering %>% 
+  select(`Character Name`, .cluster) %>%
+  mutate(x = runif(n(), 0, 10),
+         y = runif(n(), 0, 10)) %>%
+  ggplot(aes(x=x,y=y, label=`Character Name`)) +
+  ggrepel::geom_text_repel(size = 3) +
+  theme_minimal() +
+  facet_wrap(~.cluster)
+```
+
+
+
