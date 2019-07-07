@@ -264,7 +264,7 @@ scaled_clustering &lt;- kmeans(swgoh_scaled, centers = 10, nstart = 50) %&gt;%
 <pre><code>## Joining, by = &quot;Character Name&quot;</code></pre>
 <p><img src="/post/2019-07-07-kmeans_files/figure-html/unnamed-chunk-15-1.png" width="960" /></p>
 <p>It does seem that my observations were correct, and tanks are indeed focussed in cluster 7. Cluster 8 also seems to exclusively contain attackers, with the role also being prevalent in clusters 4 and 9. Clusters 2 and 10 seem to be focussed on support roles.</p>
-<p>Given there are 4 roles, I’m curious to see how well k-means is able to distinguish between them if we assume 4 cluster:</p>
+<p>Given there are 4 roles, I’m curious to see how well k-means is able to distinguish between them if we assume 4 clusters:</p>
 <pre class="r"><code>set.seed(125)
 kmeans(swgoh_scaled, centers = 4, nstart = 50) %&gt;%
   augment(swgoh_scaled) %&gt;%
@@ -281,5 +281,5 @@ kmeans(swgoh_scaled, centers = 4, nstart = 50) %&gt;%
   facet_wrap(~.cluster)</code></pre>
 <pre><code>## Joining, by = &quot;Character Name&quot;</code></pre>
 <p><img src="/post/2019-07-07-kmeans_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<p>Interesting! Three of the clusters seem to be capuring support, attacker, and tank characters pretty well, however the fourth cluster seems to be a bit of a mess…this probably because healing abilities are given to a range of characters.</p>
-<p>This seems to be a pretty good algorithm, I’m interested to see how other compare. Next up, hierarchical clustering!</p>
+<p>Interesting! Three of the clusters seem to be capuring support, attacker, and tank characters pretty well, however the fourth cluster seems to be a bit of a mess…this is probably because healing abilities are given to a range of characters.</p>
+<p>This seems to be a pretty good algorithm, I’m interested to see how others compare. Next up, hierarchical clustering!</p>
