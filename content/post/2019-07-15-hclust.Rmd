@@ -1,0 +1,259 @@
+---
+title: "Experimenting with Hierarchical Clustering in a galaxy far far away..."
+date: "2019-07-15"
+author: "Jamie Lendrum"
+tags: [r, hierarchical clustering, star wars]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = here::here())
+```
+
+## Introduction
+This post will be taking a bit of an unexpected diversion. As I was experimenting with hierarchical clustering I ran into the issue of how many clusters to assume. From that point I went deep into the rabbit hole and found out some really useful stuff that I wish I'd have known when I wrote my previous post.
+
+I've discovered that choosing a number of clusters is a whole topic in itself, and there are, in general, two ways of validating a choice of cluster number:
+
+1. Internal validation indices - these use the properties of the data itself to determine the optimal number of clusters. There are literally dozens of these metrics, which essentially replace the problem of 'how many clusters do I choose?' to 'which metric do I use?' - more on this later!
+
+2. External validation - this includes using 'known' cluster labels (as I had in my last post)...but half the fun is seeing what the data itself says!
+
+So, I decided to focus more deeply on internal validity and discovered a [2001 paper by Halkidi and Vazirgiannis ](https://pdfs.semanticscholar.org/dc44/df745fbf5794066557e52074d127b31248b2.pdf) proposing an index called S_Dbw (Scattering and Density Between). The index seemed to perform well, and [another paper by Liu et al](http://datamining.rutgers.edu/publication/internalmeasures.pdf) went even further by comparing it with many other widely used indices.  This comparison tested 5 aspects of clustering, and S_Dbw was the only one to correctly identify the number of clusters in all cases! 
+
+Could I have found my silver bullet?
+
+Eager to try it out for myself, I discovered the `NbClust` package and read its [documentation](https://www.jstatsoft.org/article/view/v061i06/v61i06.pdf). I did notice while reading, that the S_Dbw metric suggested that the number of clusters in the `iris` dataset was 10 (!)
+
+However the disappointment was shortlived as the `NbClust` package looks really useful. It has many validation metrics within it, and best of all, it can calculate them all in one function call and recommend a number of clusters based on the majority vote, which in my mind seems a bit more robust.
+
+So I'm going to first go back and revisit some of the analysis in my previous post, before moving onto hierarchical clustering. I'll be using the following packages:
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(NbClust)
+theme_set(theme_bw())
+```
+
+## The NbClust view
+
+Here is the data I had previously scraped.
+
+```{r message=FALSE, warning=FALSE}
+swgoh_stats <- read_csv("content/post/data/unsupervised-learning/swgoh_stats.csv")
+swgoh_scaled <- scale(swgoh_stats[,-1])
+swgoh_roles <- read_csv("content/post/data/unsupervised-learning/swgoh_roles.csv") %>%
+  mutate(role = case_when(!is.na(attacker) ~ "Attacker",
+                          !is.na(support) ~ "Support",
+                          !is.na(tank) ~ "Tank",
+                          !is.na(healer) ~ "Healer")) %>% 
+  select(`Character Name`, role)
+```
+
+Before doing anything else I'm going to see how many clusters the `NbClust()` function recommends:
+
+```{r}
+NbClust(swgoh_scaled, distance = "euclidean", method = "kmeans")
+```
+
+Interestingly, the most recommended number of clusters by far is 3, which tallies with the results I got when I tried 4 clusters. Let's see what this looks like. It's worth noting that currently `broom` does not work with NbClust objects, so I'll use the same code as I used before, uesing the `kmeans()` function found in base R.
+
+```{r fig.height=7,fig.width=7}
+set.seed(125)
+kmeans(swgoh_scaled, centers = 3, nstart = 50) %>%
+  broom::augment(swgoh_scaled) %>%
+  bind_cols(swgoh_stats[,1]) %>%
+  left_join(swgoh_roles) %>%
+  select(`Character Name`, .cluster, role) %>%
+  mutate(x = runif(n(), 0, 10),
+         y = runif(n(), 0, 10)) %>%
+  ggplot(aes(x=x,y=y, label=`Character Name`)) +
+  ggrepel::geom_text_repel(aes(col = role), size = 3) +
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
+  facet_wrap(~.cluster)
+```
+
+We can see that this clusters slightly better, but there does still seem to be some overlap.
+
+
+## Hierarchical Clustering
+
+The two forms of hierarchical clustering essentially describe whether they are going "bottom up" or "top down". The former is given the name Hierarchical Agglomerative Clustering (HAC) or Agglomerative Nesting (AGNES) and is the most common. The latter is called Divisive Analysis Clustering (DIANA).
+
+Here, we'll focus on HAC or "T-1000 clustering" (as I like to call it) as shown in the video below.
+
+```{r echo=FALSE}
+blogdown::shortcode("youtube", "Aq5ydeWWr4A")
+```
+
+The algorithm is accessed through the `hclust()` function in base R, and the good news is we don't have to (initially) supply a number of clusters, nor a number of repeats, because the algorithm is deterministic rather than stochastic in that it eventually tries all possible numbers of clusters. The bad news however is that we must supply two other inputs:
+
+* A distance metric
+* A clustering method
+
+These essentially answer the two key questions the algorithm has in performing HAC:
+
+* How would you like to measure distance?
+* How would you like to define distance between two clusters? (linkage criterion)
+
+The most intuitive distance metric is straight line distance between two points (euclidean) and is probably the most often used, but other possibilities include "manhattan" (summing up the vector component distances) and "maximum" (taking the maximum of the vector components distances).
+
+There are also many ways of calculating the distance between two clusters, including: taking the distance between the two closest points ("single"), or the distance between the furthest points ("complete"), taking the average or median distance between all points in the two clusters ("average"/"median"), minimising the variance between clusters (Ward's method). If you wanted to cluster by correlation rather than distance, you could provide the `hclust()` function the value of `1 - abs(cor(x))`.
+
+The first thing I'll do here is untidy my data by putting the character names as row names, as it will prove useful when I visualise later.
+
+```{r message=FALSE, warning=FALSE}
+swgoh_stats_rn <- read_csv("content/post/data/unsupervised-learning/swgoh_stats.csv") %>% 
+                column_to_rownames("Character Name")
+swgoh_scaled <- scale(swgoh_stats_rn)
+```
+
+The `hclust()` function takes a distance matrix as input, so a simple model call would look something like this:
+
+```{r}
+hclust_model <- swgoh_scaled %>% 
+                dist("euclidean") %>% 
+                hclust("complete")
+
+hclust_model
+```
+
+Unlike `kmeans()`, this model doesn't really give anything useful when it's printed out. Also, the `broom` package doesn't seem to work on `hclust` objects, but this isn't such a big deal as half the point of hierarchical clustering is being able to see the clustering evolution visually. On that note...
+
+## Dendrograms
+
+The usual way hierarchical clustering is visualised is through a dendrogram. Note that the character names have been included as the information was contained in the row names. Without this, it would just show row numbers. The branches tend to get a bit shorter when height is below 8, suggesting the best number of clusters is below less than 8.
+
+```{r}
+plot(hclust_model)
+```
+
+We can align the labels a bit more nicely by setting the `hang` parameter to -1:
+
+```{r}
+plot(hclust_model, hang = -1)
+```
+
+I wanted to find out which combinations of distance metric and clustering method provided the best results. I tried all combinations and found that the Ward methods seemed to provide the most clear clustering. However during the course of my research I found a [goldmine on information on Stack Overflow from a user called ttnphns](https://stats.stackexchange.com/questions/63546/comparing-hierarchical-clustering-dendrograms-obtained-by-different-distances/63549) who seemed to be very knowledgeable on the subject of clustering, offering some great guidance:
+
+* Do not choose your method by visually comparing dendrograms;
+* Do not decide on the number of clusters by looking at dendrograms created by the Ward method;
+* Decide on the distance metric consciously, according to what makes sense for your problem, rather than blindly trying different ones;
+* Ensure you use distance metrics required by certain methods, e.g. Ward/centroid require euclidean distance;
+* Hierarchical clustering is generally not recommended for problems with thousands of observations;
+
+All that said, from what I've read, the single and centroid methods are used much less often than complete/average/Ward. For my analysis, I tried using the `NbClust()` function using Ward, complete, and average linkage methods. The recommended number of clusters were:
+
+* Ward - 3
+* Complete - 4
+* Average - 2 or 6
+
+I'm interested to see the dendrogram for each of these methods, as well as the wordcloud, which I'll generate by using the `cutree()` function to cut the tree at the recommended number of clusters to get the cluster assignments for each character.
+
+First up, Ward's method:
+
+```{r}
+hclust_model <- swgoh_scaled %>% 
+                dist("euclidean") %>% 
+                hclust("ward.D2")
+plot(hclust_model, hang = -1)
+```
+
+
+```{r}
+swgoh_stats %>%
+  bind_cols(.cluster = cutree(hclust_model, k = 3)) %>%
+  left_join(swgoh_roles) %>%
+  select(`Character Name`, .cluster, role) %>%
+  mutate(x = runif(n(), 0, 10),
+         y = runif(n(), 0, 10)) %>%
+  ggplot(aes(x=x,y=y, label=`Character Name`)) +
+  ggrepel::geom_text_repel(aes(col = role), size = 3) +
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
+  facet_wrap(~.cluster)
+```
+
+With Ward's method we get similar results to k-means.
+
+```{r}
+hclust_model <- swgoh_scaled %>% 
+                dist("euclidean") %>% 
+                hclust("complete")
+plot(hclust_model, hang = -1)
+```
+
+
+```{r}
+swgoh_stats %>%
+  bind_cols(.cluster = cutree(hclust_model, k = 4)) %>%
+  left_join(swgoh_roles) %>%
+  select(`Character Name`, .cluster, role) %>%
+  mutate(x = runif(n(), 0, 10),
+         y = runif(n(), 0, 10)) %>%
+  ggplot(aes(x=x,y=y, label=`Character Name`)) +
+  ggrepel::geom_text_repel(aes(col = role), size = 3) +
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
+  facet_wrap(~.cluster)
+```
+
+This wordcloud is very similar to the one using Ward's method, however two characters have been separated into their own cluster - these characters have been released very recently.
+
+```{r}
+hclust_model <- swgoh_scaled %>% 
+                dist("euclidean") %>% 
+                hclust("average")
+plot(hclust_model, hang = -1)
+```
+
+
+```{r}
+swgoh_stats %>%
+  bind_cols(.cluster = cutree(hclust_model, k = 2)) %>%
+  left_join(swgoh_roles) %>%
+  select(`Character Name`, .cluster, role) %>%
+  mutate(x = runif(n(), 0, 10),
+         y = runif(n(), 0, 10)) %>%
+  ggplot(aes(x=x,y=y, label=`Character Name`)) +
+  ggrepel::geom_text_repel(aes(col = role), size = 3) +
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
+  facet_wrap(~.cluster)
+```
+
+Using average linkage with two clusters is not very helpful at all.
+
+```{r}
+hclust_model <- swgoh_scaled %>% 
+                dist("euclidean") %>% 
+                hclust("average")
+plot(hclust_model, hang = -1)
+```
+
+
+```{r}
+swgoh_stats %>%
+  bind_cols(.cluster = cutree(hclust_model, k = 6)) %>%
+  left_join(swgoh_roles) %>%
+  select(`Character Name`, .cluster, role) %>%
+  mutate(x = runif(n(), 0, 10),
+         y = runif(n(), 0, 10)) %>%
+  ggplot(aes(x=x,y=y, label=`Character Name`)) +
+  ggrepel::geom_text_repel(aes(col = role), size = 3) +
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
+  facet_wrap(~.cluster)
+```
+
+Despite this clustering looking quite awful and imbalanced, the characters that are in the sparse clusters almost all have something in common - they are among the newest characters released/reworked, and this definitely supports the idea that the developers are trying differently balanced characters.
+
+I think in terms of clustering performance, Ward's method seems to be better in this case, however the average method has brought out distinctions in newer characters.
+
+In my next post I'll be experimenting with some different visualisation packages for hierarchical clustering output.
