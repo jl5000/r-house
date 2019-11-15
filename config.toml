@@ -74,6 +74,11 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     url = "page/about/"
     weight = 2
 
+[[menu.main]]
+    name = "CV"
+    url = "https://github.com/jl5000/jamie_lendrum_cv/raw/master/Jamie_Lendrum_CV.pdf"
+    weight = 3
+
 #[[menu.main]]
 #    identifier = "samples"
 #    name = "Samples"
@@ -100,19 +105,19 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 [[menu.main]]
     name = "Tags"
     url = "tags"
-    weight = 3
+    weight = 4
     
 [[menu.main]]
     name = "R-Bloggers"
     url = "https://www.r-bloggers.com/"
-    weight = 4  
+    weight = 5  
     
 [[menu.main]]
     name = "Resources"
     url = "page/resources/"
-    weight = 5
+    weight = 6
     
 [[menu.main]]
     name = "Tidysearch"
     url = "page/base-r-tidyverse-functions/"
-    weight = 6  
+    weight = 7  

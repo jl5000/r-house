@@ -1,0 +1,98 @@
+---
+title: "Visualising hierarchical clustering"
+date: "2019-07-12"
+author: "Jamie Lendrum"
+tags: [r, tidyverse, broom, kmeans, clustering, star wars]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = here::here())
+```
+
+
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(pheatmap)
+library(d3heatmap) #comes with dendextend!
+library(dendextend)
+library(networkD3)
+```
+
+
+
+```{r, message=FALSE, warning=FALSE}
+swgoh_stats_rn <- read_csv("content/post/data/unsupervised-learning/swgoh_stats.csv") %>% 
+                column_to_rownames("Character Name")
+swgoh_scaled <- scale(swgoh_stats_rn)
+swgoh_roles <- read_csv("content/post/data/unsupervised-learning/swgoh_roles.csv") %>%
+  mutate(role = case_when(!is.na(attacker) ~ "Attacker",
+                          !is.na(support) ~ "Support",
+                          !is.na(tank) ~ "Tank",
+                          !is.na(healer) ~ "Healer")) %>% 
+  select(`Character Name`, role)
+```
+
+
+## Heatmaps
+
+base R
+
+```{r}
+heatmap(swgoh_scaled)
+```
+
+```{r}
+heatmap(swgoh_scaled, hclustfun = function(x) hclust(x, method="ward.D2"))
+```
+
+
+skipping gplots::heatmap.2()
+
+
+```{r}
+pheatmap(swgoh_scaled, clustering_method="ward.D2")
+```
+
+```{r}
+d3heatmap(swgoh_scaled)
+```
+
+
+```{r}
+d3heatmap(swgoh_scaled, colors = viridis::viridis(20), hclustfun = function(x) hclust(x, method="ward.D2"))
+```
+
+
+## Alternative Dendrograms
+
+```{r}
+hclust_model <- swgoh_scaled %>% 
+                  dist("euclidean") %>% 
+                  hclust(method = "ward.D2")
+```
+
+```{r}
+hclust_model %>% 
+  as.dendrogram() %>% 
+  plot(horiz = TRUE)
+```
+
+
+dendextend allows us to change attributes of plot before piping into plot
+
+```{r}
+hclust_model %>% 
+  as.dendrogram() %>% 
+  highlight_branches_lwd() %>% 
+  highlight_branches_col() %>% 
+  plot(horiz = TRUE)
+```
+
+networkD3:
+
+```{r}
+dendroNetwork(hclust_model, zoom = TRUE)
+```
+
