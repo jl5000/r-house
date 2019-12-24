@@ -113,6 +113,11 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     weight = 5  
     
 [[menu.main]]
+    name = "Books"
+    url = "https://github.com/jl5000/r_ebooks/blob/master/README.md"
+    weight = 6
+    
+[[menu.main]]
     name = "Tidysearch"
     url = "https://jl5000.github.io/tidysearch/"
-    weight = 6  
+    weight = 7  
