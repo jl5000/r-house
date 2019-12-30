@@ -1,0 +1,68 @@
+---
+title: "Can Genealogical data be tidy?"
+date: "2019-12-30"
+author: "Jamie Lendrum"
+tags: [r, tidy data, genealogy, gedcom, gramps]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = here::here())
+```
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse)
+```
+
+> Happy families are all alike; every unhappy family is unhappy in its own way — Leo Tolstoy
+
+> Like families, tidy datasets are all alike but every messy dataset is messy in its own way — Hadley Wickham
+
+**In this post, I'll be exploring how genealogical data stored in the de-facto standard format, GEDCOM, could be made tidy, and arguing that this is not really ideal.**
+
+About 6 years ago, long before I got involved with Data Science and when R was just the 18th letter of the alphabet, I started researching my family history. It was really interesting, hugely rewarding, and I rapidly found myself inundated with various pieces of information - a lot of it conflicting - from various sources. Desperate to organise it all, I discovered the Genealogical Data Communication (GEDCOM) format. I used this format to record all I had found and used some special freeware to generate family tree diagrams in PDF format.
+
+Fast forward to today.
+
+I now find myself in a situation where I'm keen to dig out my old GEDCOM file and see what R can do with it! I searched on GitHub for repos that manipulate GEDCOM files in R, and perhaps the most promising was one by Peter Prevos who had [written a short article](https://lucidmanager.org/gedcom-reader/) describing the format of the file and its limitations. I highly recommend you give it a read.
+
+For all its faults, the GEDCOM data format has been the standard for decades, so a fundamental constraint here is that I'm not going to try to invent a whole new format, I'm just going to try to deal with the standard we have. Files contain data on more than one type of observational unit, including individuals, families, and data sources. It's inappropriate to try to fit all of that in one big dataframe, so I'll just be focusing on individuals in this post.
+
+Peter has not only written some code to read GEDCOM files, but also code to do some simple analysis and generate some visualisations using the `tidyverse`. This takes data which is inherently more like a nested list structure, and creates a tidy dataframe, with a row for each individual, and fields that include name, birth date, mother and father. On the face of it, this seems intuitive, but when dealing with detailed genealogical data, this isn't entirely suitable. Part of the problem comes down to conflicting data.
+
+One of the strengths of the GEDCOM format is the ability to record several possible values of an individual's attribute. For example, if one source tells you an ancestor was born in 1900, and another tells you they were born in 1901, you don't have to choose one as correct and dismiss the other - you can record both and capture the uncertainty - which is an absolutely crucial capability of any genealogical data format. If we were to try to capture these possible values using the dataframe format, one might imagine having a row for every combination of possible values, e.g.
+
+```{r echo=FALSE}
+example <- tribble(
+~ID, ~Name, ~DOB, ~Place_of_death,
+"I56", "Joe Bloggs", "12 December 1900", "Somerset, UK",
+"I56", "Joe Bloggs", "12 December 1901", "Somerset, UK",
+"I56", "Joe Bloggs", "12 December 1900", "Devon, UK",
+"I56", "Joe Bloggs", "12 December 1901", "Devon, UK",
+)
+knitr::kable(example)
+```
+
+Unfortunately, this has two drawbacks; you could feasibly end up with hundreds of rows for a single individual as the different possibilities for dozens of fields multiply up - with only one row being 'correct' - resulting in a lot of unnecessary data duplication. You could employ nested list columns to get around this, but this would make the dataframe complex to deal with and difficult to share with non-R users. It also wouldn't solve the second issue - being able to record the data source for each conflicting piece of data.
+
+These limitations rapidly lead you down a path of considering an 'ultra-tidy' dataframe instead, where each row records a possible value for an individual attribute and a source can be recorded for each, e.g.
+
+```{r echo=FALSE}
+example %>% 
+  pivot_longer(-ID, names_to = "attribute", values_to = "value") %>% 
+  distinct() %>% 
+  arrange() %>% 
+  mutate(source = c("A", "A", "A", "B", "B")) %>% 
+  knitr::kable()
+```
+
+This is a lot better, especially considering you could add a 'notes' column (which is one of the tags in a GEDCOM file), that you could attach to any data value. Unfortunately, uncertainty isn't the only reason why a field would have more than one value. Fields like occupation and address could have several values as an individual may have had several over their lifetime. So, we might consider adding further fields to the above capturing instants or periods of time for which the value applies.
+
+Now we encounter a real problem. There is a very good reason why the GEDCOM data structure is nested in nature - in order to handle things like name and address. The NAME field may contain the individual's full name, but child fields may decompose this into given name (GIVN) and surname (SURN), as well as other child fields not found in the parent NAME field, such as nicknames (FONE). Similarly, the address field has child fields for city, state, and country.
+
+I have considered having something like three attribute columns (for 3 levels of nesting), but we lose the benefit of having one row per attribute, and it feels like a fudge too far. 
+
+I've therefore abandoned my intention of converting my GEDCOM files to tidy dataframes and have looked for alternatives. I know Peter has begun exploring network data structures and I can certainly see why.
+
+I have since discovered an open source genealogy project called [Gramps](https://gramps-project.org) which seems to rely on XML data structures. Sounds promising. I intend to try installing this and seeing how it fares with converting my existing GEDCOM files.
+
