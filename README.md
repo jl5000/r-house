@@ -4,4 +4,9 @@
 My blog on learning Data Science with R!
 See it at https://r-house.netlify.com
 
-The website is automatically built and hosted by Netlify, hence the absence of a /public folder.
+The site is generated using:
+
+* The `blogdown` package by Yihui Xie
+* The Hugo static-site generator (used by `blogdown`)
+* The [Beautiful Hugo](https://github.com/halogenica/beautifulhugo) theme by Michael Romero
+* The site is automatically built and hosted with Netlify (hence the absence of a /public folder).
